@@ -1,6 +1,7 @@
 "use client";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet"; // ← これを追加
+import intersections from "../data/intersection.json";
 
 // ▼▼ ここから追加 ▼▼
 // Next.jsでLeafletのデフォルトマーカー画像が表示されない問題を解決
@@ -15,9 +16,16 @@ L.Icon.Default.mergeOptions({
 });
 // ▲▲ ここまで ▲▲
 
+const dangerIcon = L.icon({
+  iconUrl: "/danger_icon.svg", 
+  iconSize: [32, 32],          
+  iconAnchor: [16, 32],        
+  popupAnchor: [0, -32],       
+});
+
 const MapComponent = () => {
   // 長崎駅付近の座標
-  const position: [number, number] = [32.7503, 129.8778];
+  const position: [number, number] = [32.752405, 129.871058];
 
   return (
     <MapContainer
@@ -33,6 +41,27 @@ const MapComponent = () => {
       <Marker position={position}>
         <Popup>長崎駅！ここからスタート！</Popup>
       </Marker>
+
+    {/* JSONの交差点データをループしてビックリマークを描画 */}
+      {intersections.map((spot) => (
+        <Marker
+          key={spot.id}
+          position={[spot.lat, spot.lng]}
+          icon={dangerIcon} 
+        >
+          <Popup>
+            <div style={{ minWidth: "150px" }}>
+              <strong style={{ color: "#d97706", fontSize: "14px" }}>
+                {spot.name}
+              </strong>
+              <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#374151" }}>
+                {spot.description}
+              </p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
+
     </MapContainer>
   );
 };
