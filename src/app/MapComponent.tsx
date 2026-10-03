@@ -46,9 +46,12 @@ const defaultParkingIcon = L.icon({
 
 // デフォルトの観光地ピンアイコン
 const defaultSpotIcon = L.icon({
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
@@ -420,10 +423,10 @@ export default function MapComponent({
           hasDestination={!!spotId}
         />
 
-        {/* 国土地理院の淡色地図 */}
+        {/* OpenStreetMap（標準） */}
         <TileLayer
-          attribution='&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>'
-          url="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         {/* 出発地マーカー（目的地選択時、または現在地取得時に表示） */}
@@ -434,8 +437,15 @@ export default function MapComponent({
                 <strong style={{ color: "#2563eb", fontSize: "14px" }}>
                   📍 出発地 {isCustomStart ? "（現在地）" : "（長崎駅）"}
                 </strong>
-                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#6b7280" }}>
-                  座標: {startPosition[0].toFixed(4)}, {startPosition[1].toFixed(4)}
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    fontSize: "11px",
+                    color: "#6b7280",
+                  }}
+                >
+                  座標: {startPosition[0].toFixed(4)},{" "}
+                  {startPosition[1].toFixed(4)}
                 </p>
               </div>
             </Popup>
@@ -447,24 +457,60 @@ export default function MapComponent({
           <Marker position={goalPosition} icon={destinationParkingIcon}>
             <Popup>
               <div style={{ minWidth: "180px" }}>
-                <div style={{ display: "inline-block", background: "#fee2e2", color: "#b91c1c", padding: "2px 6px", borderRadius: "4px", fontSize: "10px", fontWeight: "bold", marginBottom: "4px" }}>
+                <div
+                  style={{
+                    display: "inline-block",
+                    background: "#fee2e2",
+                    color: "#b91c1c",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    fontSize: "10px",
+                    fontWeight: "bold",
+                    marginBottom: "4px",
+                  }}
+                >
                   🏁 目的地駐車場
                 </div>
-                <strong style={{ display: "block", color: "#dc2626", fontSize: "15px" }}>
+                <strong
+                  style={{
+                    display: "block",
+                    color: "#dc2626",
+                    fontSize: "15px",
+                  }}
+                >
                   {targetParking.name}
                 </strong>
                 {selectedSpot && (
-                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#1d4ed8", fontWeight: "600" }}>
+                  <p
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: "12px",
+                      color: "#1d4ed8",
+                      fontWeight: "600",
+                    }}
+                  >
                     🎯 「{selectedSpot.name}」におすすめの駐車場です
                   </p>
                 )}
                 {targetParking.price && (
-                  <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#4b5563" }}>
+                  <p
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: "11px",
+                      color: "#4b5563",
+                    }}
+                  >
                     料金: {targetParking.price}
                   </p>
                 )}
                 {targetParking.capacity && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#4b5563" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#4b5563",
+                    }}
+                  >
                     収容台数: {targetParking.capacity}台
                   </p>
                 )}
@@ -542,17 +588,35 @@ export default function MapComponent({
                     {p.name}
                   </strong>
                   {p.description && (
-                    <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#374151" }}>
+                    <p
+                      style={{
+                        margin: "4px 0 0",
+                        fontSize: "12px",
+                        color: "#374151",
+                      }}
+                    >
                       {p.description}
                     </p>
                   )}
                   {p.price && (
-                    <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    <p
+                      style={{
+                        margin: "2px 0 0",
+                        fontSize: "11px",
+                        color: "#6b7280",
+                      }}
+                    >
                       料金: {p.price}
                     </p>
                   )}
                   {p.capacity && (
-                    <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    <p
+                      style={{
+                        margin: "2px 0 0",
+                        fontSize: "11px",
+                        color: "#6b7280",
+                      }}
+                    >
                       収容台数: {p.capacity}台
                     </p>
                   )}
@@ -562,7 +626,10 @@ export default function MapComponent({
                         href={p.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "#2563eb", textDecoration: "underline" }}
+                        style={{
+                          color: "#2563eb",
+                          textDecoration: "underline",
+                        }}
                       >
                         詳細情報
                       </a>
@@ -587,7 +654,13 @@ export default function MapComponent({
             >
               <Popup>
                 <div style={{ minWidth: "180px", maxWidth: "250px" }}>
-                  <strong style={{ color: "#1d4ed8", fontSize: "15px", display: "block" }}>
+                  <strong
+                    style={{
+                      color: "#1d4ed8",
+                      fontSize: "15px",
+                      display: "block",
+                    }}
+                  >
                     {isSelected ? `⭐ ${spot.name}（選択中）` : spot.name}
                   </strong>
 
