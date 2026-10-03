@@ -2,8 +2,8 @@
   {
     "id": "chinatown",
     "name": "中華街",
-    "lat": 32.7416,
-    "lng": 129.8754,
+    "lat": 32.74145,
+    "lng": 129.87527,
     "description": "日本三大中華街の一つ。ちゃんぽんや皿うどんなどのグルメが楽しめます。",
     "osekkai_message": "中華街のすぐ横は一方通行ばっかりで渋滞しやすいけん、少し離れた湊公園周辺の駐車場から歩くのがよかよ！",
     "recommended_parking_id": "minato_park_parking"
@@ -38,8 +38,8 @@
   {
     "id": "inasayama",
     "name": "稲佐山",
-    "lat": 32.7525,
-    "lng": 129.8491,
+    "lat": 32.7526,
+    "lng": 129.8495,
     "description": "長崎市の夜景を一望できる展望台。世界新三大夜景の一つです。",
     "osekkai_message": "夜の山頂駐車場はすごく混むし、道も暗くて細いけん、中腹の駐車場に停めてスロープカーで登るのが一番安心ばい！",
     "recommended_parking_id": "inasayama_mid_parking"
@@ -56,8 +56,8 @@
   {
     "id": "peace_park",
     "name": "平和公園",
-    "lat": 32.7763,
-    "lng": 129.8622,
+    "lat": 32.7764,
+    "lng": 129.86363,
     "description": "悲惨な戦争を二度と繰り返さないという誓いと、世界平和への願いを込めて作られた公園。",
     "osekkai_message": "近くの松山町駐車場が広くて停めやすかよ！休日は修学旅行のバスも多かけん、入り口周辺は気をつけて運転してね。",
     "recommended_parking_id": "matsuyama_parking"
@@ -83,8 +83,8 @@
   {
     "id": "urakami_cathedral",
     "name": "浦上天主堂",
-    "lat": 32.7768,
-    "lng": 129.8683,
+    "lat": 32.7761,
+    "lng": 129.8685,
     "description": "被爆したマリア像が残る、赤レンガ造りの美しいカトリック教会。",
     "osekkai_message": "周辺の住宅街は一方通行や細い道が多かけん、ナビに頼りすぎず標識をよく見て気をつけて運転してね！",
     "recommended_parking_id": "urakami_parking"
