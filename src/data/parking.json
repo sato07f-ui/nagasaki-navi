@@ -9,7 +9,7 @@
     "twentyfour_h": "地上のみ24時間営業",
     "three_dim": "○",
     "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
-    "spot_key": ["peace_park", "abomb_museum", "urakami_church"]
+    "spot_key": ["peace_park", "abomb_museum", "urakami_church", "urakami_cathedral"]
     },
 
     {
@@ -22,7 +22,7 @@
     "twentyfour_h": "地上のみ24時間営業",
     "three_dim": "○",
     "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
-    "spot_key": ["peace_park", "abomb_museum", "urakami_church"]
+    "spot_key": ["peace_park", "abomb_museum", "urakami_church", "urakami_cathedral"]
     },
 
     {
@@ -35,7 +35,7 @@
     "twentyfour_h": "○",
     "three_dim": "×",
     "url": "https://times-info.net/P42-nagasaki/C201/park-detail-BUK0073644/",
-    "spot_key": "dejima" 
+    "spot_key": ["dejima"] 
     },
 
     {
@@ -43,12 +43,12 @@
     "name": "市民会館地下駐車場",
     "lat": 32.748522, 
     "lng": 129.880795,
-    "price":"",
+    "price":"無料（用事による）/市営基準",
     "capacity": "790（7時～22時）",
     "twentyfour_h": "×",
     "three_dim": "○",
     "url": "https://www.city.nagasaki.lg.jp/page/4443.html", 
-    "spot_key": "meganebashi"
+    "spot_key": ["meganebashi"]
     },
 
     {
@@ -87,7 +87,7 @@
     "twentyfour_h": "○",
     "three_dim":"×",
     "url": "https://times-info.net/P42-nagasaki/C201/park-detail-BUK0068915/",
-    "spot_key": "nagasaki_station" 
+    "spot_key": ["nagasaki_station"] 
     },
 
     {
@@ -100,7 +100,7 @@
     "twentyfour_h": "○",
     "three_dim":"○",
     "url": "https://search.ipos-land.jp/p/detailp.aspx?id=M29008339",
-    "spot_key": "china_town"
+    "spot_key": ["china_town", "chinatown"]
     },
 
     {
@@ -113,7 +113,7 @@
     "twentyfour_h": "○",
     "three_dim":"○",
     "url": "https://shianbaship.jp/",
-    "spot_key": "hamanomachi"
+    "spot_key": ["hamanomachi"]
     }, 
 
     {
@@ -126,7 +126,6 @@
     "twentyfour_h": "×",
     "three_dim":"×",
     "url": "https://inasayama.info/access/",
-    "spot_key": "inasayama"
+    "spot_key": ["inasayama"]
     }
-
-] 
+]
