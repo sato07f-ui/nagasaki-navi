@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Caveat , Zen_Maru_Gothic } from "next/font/google";
+import spots from "../data/spot.json";
+import parkings from "../data/parking.json";
 
 const caveat = Caveat({ 
     subsets: ["latin"], 
@@ -18,6 +20,38 @@ const [location, setLocation] = useState("現在地を取得");
 const [destination, setDestination] = useState("");
 const[latitude, setLatitude] = useState<number | null>(null);
 const[longitude, setLongitude] = useState<number | null>(null);
+const[showSpots, setShowSpots] = useState(false);
+const [showStamps, setShowStamps] = useState(false);
+const [showParkings, setShowParkings] = useState(false);
+const [showMenu, setShowMenu] = useState(false);
+const [collectedStamps, setCollectedStamps] = useState<string[]>([
+  "chinatown",
+]);
+
+const getDistance = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+) => {
+  const R = 6371000; // 地球の半径（m）
+
+  const toRad = (value: number) => (value * Math.PI) / 180;
+
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+};
 
 const getCurrentLocation = () => {
   if (!navigator.geolocation) {
@@ -34,6 +68,27 @@ const getCurrentLocation = () => {
 
       setLatitude(latitude);
       setLongitude(longitude);
+
+      // 現在地から58m以内の観光地を探す
+const nearbySpots = spots.filter((spot) => {
+  const distance = getDistance(
+    latitude,
+    longitude,
+    spot.lat,
+    spot.lng
+  );
+
+  return distance <= 50;
+});
+
+// 58m以内の観光地があればスタンプを獲得
+if (nearbySpots.length > 0) {
+  setCollectedStamps((prev) => {
+    const newStamps = nearbySpots.map((spot) => spot.id);
+
+    return [...new Set([...prev, ...newStamps])];
+  });
+}
 
       try {
         const response = await fetch(
@@ -68,19 +123,23 @@ const getCurrentLocation = () => {
         {/* 上部 */}
         <div className="flex items-center justify-between">
           <button
+            type="button"
+            onClick={() => setShowMenu(true)}
             className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl text-slate-700 shadow-md"
             aria-label="メニュー"
           >
             ☰
           </button>
 
-          <button className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-4 py-2 text-sm font-semibold text-blue-600 shadow-sm transition hover:bg-white/60 active:scale-95">
+          <Link
+  href="/?mode=parking"
+  className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-4 py-2 text-sm font-semibold text-blue-600 shadow-md backdrop-blur-md transition hover:bg-white/75 active:scale-95"
+>
   <span className="flex h-6 w-6 items-center justify-center rounded-md bg-sky-500 text-xs font-bold text-white">
     P
   </span>
-
   駐車場を探す
-</button>
+</Link>
         </div>
 
         {/* タイトル */}
@@ -211,20 +270,12 @@ const getCurrentLocation = () => {
   <option value="" disabled>
     目的地を選択
   </option>
-
-  <option value="中華街">中華街</option>
-  <option value="グラバー園">グラバー園</option>
-  <option value="出島">出島</option>
-  <option value="眼鏡橋">眼鏡橋</option>
-  <option value="稲佐山">稲佐山</option>
-  <option value="大浦天主堂">大浦天主堂</option>
-  <option value="平和公園">平和公園</option>
-  <option value="長崎駅周辺の商業施設">
-    長崎駅周辺の商業施設
+{spots.map((spot) => (
+  <option key={spot.id} value={spot.id}>
+    {spot.name}
   </option>
-  <option value="原爆資料館">原爆資料館</option>
-  <option value="浦上天主堂">浦上天主堂</option>
-  <option value="浜町アーケード">浜町アーケード</option>
+))}
+
 </select>
     </div>
   </div>
@@ -289,8 +340,10 @@ const getCurrentLocation = () => {
 <div className="mt-auto pt-6">
   <div className="grid grid-cols-3 gap-3 rounded-3xl border border-white/40 bg-white/50 p-3 shadow-lg backdrop-blur-md">
 
-    {/* テストコース */}
-    <button className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
+    {/* 観光地 */}
+    <button 
+    onClick={() => setShowSpots(true)}
+    className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
         <svg
   viewBox="0 0 24 24"
@@ -298,32 +351,12 @@ const getCurrentLocation = () => {
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
 >
-  {/* 車体 */}
   <path
-    d="M5 11L7 7.5C7.4 6.6 8.2 6 9.2 6H14.8C15.8 6 16.6 6.6 17 7.5L19 11"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+    d="M8 4H16L15 9L18 12H6L9 9L8 4Z"
+    fill="currentColor"
   />
-
-  <rect
-    x="4"
-    y="10"
-    width="16"
-    height="7"
-    rx="2.5"
-    stroke="currentColor"
-    strokeWidth="2"
-  />
-
-  {/* ライト */}
-  <circle cx="7" cy="13.5" r="1" fill="currentColor" />
-  <circle cx="17" cy="13.5" r="1" fill="currentColor" />
-
-  {/* タイヤ */}
   <path
-    d="M7 17V19M17 17V19"
+    d="M12 12V20"
     stroke="currentColor"
     strokeWidth="2"
     strokeLinecap="round"
@@ -332,12 +365,14 @@ const getCurrentLocation = () => {
       </div>
 
       <span className="mt-2 text-xs font-medium text-slate-600">
-        テストコース
+        観光地
       </span>
     </button>
 
     {/* 駐車場 */}
-    <button className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
+    <button 
+    onClick={() => setShowParkings(true)}
+    className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100">
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500 text-sm font-bold text-white">
           P
@@ -345,12 +380,14 @@ const getCurrentLocation = () => {
       </div>
 
       <span className="mt-2 text-xs font-medium text-slate-600">
-        駐車場
+        駐車場一覧
       </span>
     </button>
 
     {/* スタンプ */}
-    <button className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
+    <button 
+    onClick={() => setShowStamps(true)}
+    className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95">
       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
         <svg
           viewBox="0 0 24 24"
@@ -388,6 +425,298 @@ const getCurrentLocation = () => {
 </div>
 
       </div>
+    {/* 観光地一覧モーダル */}
+{showSpots && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
+    <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/80 p-5 shadow-2xl backdrop-blur-md">
+
+      {/* タイトル */}
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-slate-800">
+          観光地一覧
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => setShowSpots(false)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* 観光地 */}
+      <div className="space-y-3">
+        {spots.map((spot) => (
+          <div
+            key={spot.id}
+            className="rounded-2xl bg-white/70 p-4"
+          >
+            <div className="flex gap-3">
+              <span className="text-pink-500">📌</span>
+
+              <div>
+                <h3 className="font-bold text-slate-800">
+                  {spot.name}
+                </h3>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {spot.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+)}
+{/* スタンプ帳モーダル */}
+{showStamps && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
+    <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/85 p-5 shadow-2xl backdrop-blur-md">
+
+      {/* タイトル */}
+      <div className="mb-2 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800">
+            長崎スタンプ帳
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            観光地を巡ってスタンプを集めよう！
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowStamps(false)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* 獲得数 */}
+      <div className="my-5 text-center">
+        <span className="text-2xl font-bold text-emerald-500">
+          {collectedStamps.length}
+        </span>
+        <span className="text-sm font-semibold text-slate-500">
+          {" "} / {spots.length} GET!
+        </span>
+      </div>
+
+      {/* スタンプ一覧 */}
+      <div className="grid grid-cols-2 gap-3">
+        {spots.map((spot) => (
+          <div
+            key={spot.id}
+            className="flex flex-col items-center rounded-2xl bg-white/70 p-4"
+          >
+            {collectedStamps.includes(spot.id) ? (
+  /* 獲得済み */
+  <div className="flex h-20 w-20 rotate-[-8deg] items-center justify-center rounded-full border-4 border-emerald-400 bg-emerald-50">
+    <div className="text-center text-emerald-500">
+      <div className="text-2xl font-black">✓</div>
+      <div className="text-[10px] font-bold">GET!</div>
+    </div>
+  </div>
+) : (
+  /* 未獲得 */
+  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-slate-50">
+    <svg
+      viewBox="0 0 24 24"
+      className="h-7 w-7 text-slate-300"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="6"
+        y="10"
+        width="12"
+        height="10"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  </div>
+)}
+
+            <p className="mt-3 text-center text-sm font-bold text-slate-700">
+              {spot.name}
+            </p>
+
+            <p
+  className={`mt-1 text-xs ${
+    collectedStamps.includes(spot.id)
+      ? "font-bold text-emerald-500"
+      : "text-slate-400"
+  }`}
+>
+  {collectedStamps.includes(spot.id) ? "獲得済み" : "未獲得"}
+</p>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+)}
+{/* 駐車場一覧モーダル */}
+{showParkings && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
+    <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/85 p-5 shadow-2xl backdrop-blur-md">
+
+      {/* タイトル */}
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800">
+            駐車場一覧
+          </h2>
+          <p className="mt-1 text-xs text-slate-500">
+            長崎市内の駐車場情報
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowParkings(false)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* 駐車場一覧 */}
+      <div className="space-y-3">
+        {parkings.map((parking) => (
+          <div
+            key={parking.id}
+            className="rounded-2xl bg-white/70 p-4"
+          >
+            <div className="flex items-start gap-3">
+
+              {/* Pアイコン */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 font-bold text-blue-600">
+                P
+              </div>
+
+              <div className="w-full">
+                <h3 className="font-bold text-slate-800">
+                  {parking.name}
+                </h3>
+
+                <div className="mt-3 space-y-1 text-sm text-slate-600">
+                  <p>💴 {parking.price}</p>
+                  <p>🚗 {parking.capacity}台</p>
+                  <p>🕐 {parking.twentyfour_h}</p>
+                  <p>🏢 立体駐車場：{parking.three_dim}</p>
+                </div>
+
+                <a
+                  href={parking.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-block text-sm font-semibold text-blue-500 hover:text-blue-600"
+                >
+                  詳細を見る →
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+)}
+{/* サイドメニュー */}
+{showMenu && (
+  <div className="fixed inset-0 z-50 bg-black/30">
+
+    {/* メニュー本体 */}
+    <div className="h-full w-[80%] max-w-xs bg-white/90 p-6 shadow-2xl backdrop-blur-xl">
+
+      {/* 上部 */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <p className={`${caveat.className} text-3xl text-blue-600`}>
+            Nagasaki Navi
+          </p>
+          <p className="mt-1 text-xs text-slate-400">
+            MENU
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowMenu(false)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-600"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* メニュー項目 */}
+      <div className="space-y-2">
+
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-blue-50"
+        >
+          <span>🗺️</span>
+          地図を見る
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowMenu(false);
+            setShowSpots(true);
+          }}
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-pink-50"
+        >
+          <span>📌</span>
+          観光地一覧
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowMenu(false);
+            setShowParkings(true);
+          }}
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-sky-50"
+        >
+          <span>🅿️</span>
+          駐車場一覧
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowMenu(false);
+            setShowStamps(true);
+          }}
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-emerald-50"
+        >
+          <span>🏷️</span>
+          スタンプ帳
+        </button>
+
+      </div>
+    </div>
+  </div>
+)}
     </main>
+    
   );
 }
