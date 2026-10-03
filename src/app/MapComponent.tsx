@@ -167,10 +167,10 @@ const MapComponent = () => {
         zoom={13}
         style={{ height: "100%", width: "100%" }}
       >
-        {/* 国土地理院の淡色地図を使用（APIキー不要！） */}
+        {/* OpenStreetMap（標準） */}
         <TileLayer
-          attribution='&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">国土地理院</a>'
-          url="https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker position={startPosition}>
           <Popup>長崎駅！ここからスタート！</Popup>
@@ -220,8 +220,8 @@ const MapComponent = () => {
             </Popup>
           </Marker>
         ))}
-      
-      {/* parking.json から駐車場マーカーを描画*/}
+
+        {/* parking.json から駐車場マーカーを描画*/}
         {parking.map((spot: any) => (
           <Marker
             key={spot.id}
@@ -234,32 +234,68 @@ const MapComponent = () => {
                   {spot.name}
                 </strong>
                 {spot.description && (
-                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#374151" }}>
+                  <p
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: "12px",
+                      color: "#374151",
+                    }}
+                  >
                     {spot.description}
                   </p>
                 )}
                 {spot.price && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#6b7280",
+                    }}
+                  >
                     3時間での料金: {spot.price}
                   </p>
                 )}
                 {spot.capacity && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#6b7280",
+                    }}
+                  >
                     収容台数: {spot.capacity}台
                   </p>
                 )}
                 {spot.twentyfour_h && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#6b7280",
+                    }}
+                  >
                     24時間営業: {spot.twentyfour_h}
                   </p>
                 )}
                 {spot.three_dim && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#6b7280",
+                    }}
+                  >
                     立体駐車場: {spot.three_dim}
                   </p>
                 )}
                 {spot.url && (
-                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                  <p
+                    style={{
+                      margin: "2px 0 0",
+                      fontSize: "11px",
+                      color: "#6b7280",
+                    }}
+                  >
                     詳細は
                     <a
                       href={spot.url}
@@ -269,7 +305,7 @@ const MapComponent = () => {
                     >
                       こちら
                     </a>
-                    </p>
+                  </p>
                 )}
               </div>
             </Popup>
