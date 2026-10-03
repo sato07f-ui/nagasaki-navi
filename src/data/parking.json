@@ -1,0 +1,132 @@
+[
+    {
+    "id": "heiwa_park",
+    "name": "平和公園駐車場",
+    "lat": 32.776113, 
+    "lng": 129.862777,
+    "price":"620円（7時~20時）",
+    "capacity": "88",
+    "twentyfour_h": "地上のみ24時間営業",
+    "three_dim": "○",
+    "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
+    "spot_key": ["peace_park", "abomb_museum", "urakami_church"]
+    },
+
+    {
+    "id": "matsuyama_park",
+    "name": "松山町駐車場",
+    "lat": 32.774015, 
+    "lng": 129.861436,
+    "price":"620円（7時半~22時）",
+    "capacity": "292",
+    "twentyfour_h": "地上のみ24時間営業",
+    "three_dim": "○",
+    "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
+    "spot_key": ["peace_park", "abomb_museum", "urakami_church"]
+    },
+
+    {
+    "id": "dejima_park",
+    "name": "タイムズ長崎出島町駐車場",
+    "lat": 32.743640, 
+    "lng": 129.871510,
+    "price":"900円",
+    "capacity": "70",
+    "twentyfour_h": "○",
+    "three_dim": "×",
+    "url": "https://times-info.net/P42-nagasaki/C201/park-detail-BUK0073644/",
+    "spot_key": "dejima" 
+    },
+
+    {
+    "id": "meganebashi_park",
+    "name": "市民会館地下駐車場",
+    "lat": 32.748522, 
+    "lng": 129.880795,
+    "price":"",
+    "capacity": "790（7時～22時）",
+    "twentyfour_h": "×",
+    "three_dim": "○",
+    "url": "https://www.city.nagasaki.lg.jp/page/4443.html", 
+    "spot_key": "meganebashi"
+    },
+
+    {
+    "id": "matsugaeda_park",
+    "name": "松ヶ枝町駐車場",
+    "lat": 32.736202, 
+    "lng": 129.869341,
+    "price":"900円（8時~17時）",
+    "capacity": "40",
+    "twentyfour_h": "×",
+    "three_dim":"×",
+    "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
+    "spot_key": ["oura_church", "glover"]
+    },
+
+    {
+    "id": "matsugaeda2_park",
+    "name": "松ヶ枝町第2駐車場",
+    "lat": 32.736697, 
+    "lng": 129.870235,
+    "price":"900円（7時~20時)",
+    "capacity": "98",
+    "twentyfour_h": "×",
+    "three_dim":"○",
+    "url": "https://www.city.nagasaki.lg.jp/page/4443.html",
+    "spot_key": ["oura_church", "glover"]
+    },
+
+    {
+    "id": "ekimae_park",
+    "name": "タイムズ長崎駅前高架下",
+    "lat": 32.750720, 
+    "lng": 129.869067,
+    "price":"600円",
+    "capacity": "134",
+    "twentyfour_h": "○",
+    "three_dim":"×",
+    "url": "https://times-info.net/P42-nagasaki/C201/park-detail-BUK0068915/",
+    "spot_key": "nagasaki_station" 
+    },
+
+    {
+    "id": "douza_park",
+    "name": "リファレンス銅座パーク",
+    "lat": 32.742268, 
+    "lng": 129.876882,
+    "price":"900円（7時~20時)",
+    "capacity": "356",
+    "twentyfour_h": "○",
+    "three_dim":"○",
+    "url": "https://search.ipos-land.jp/p/detailp.aspx?id=M29008339",
+    "spot_key": "china_town"
+    },
+
+    {
+    "id": "shianbashi_park",
+    "name": "しあんばし駐車場",
+    "lat": 32.742548, 
+    "lng": 129.880364,
+    "price":"900円（7時~20時)",
+    "capacity": "250",
+    "twentyfour_h": "○",
+    "three_dim":"○",
+    "url": "https://shianbaship.jp/",
+    "spot_key": "hamanomachi"
+    }, 
+
+    {
+    "id": "inasa_park",
+    "name": "稲佐山公園中腹駐車場",
+    "lat": 32.759277, 
+    "lng": 129.846397,
+    "price":"無料",
+    "capacity": "400",
+    "twentyfour_h": "×",
+    "three_dim":"×",
+    "url": "https://inasayama.info/access/",
+    "spot_key": "inasayama"
+    }
+
+] 
