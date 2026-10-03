@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import L from "leaflet"; // ← これを追加
 import intersections from "../data/intersection.json";
+import parking from "../data/parking.json";
 import { fetchRoute, LatLngTuple } from "../utils/RouteService";
 
 // Next.jsでLeafletのデフォルトマーカー画像が表示されない問題を解決
@@ -16,12 +17,19 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-
+// アイコンの設定
 const dangerIcon = L.icon({
   iconUrl: "/danger_icon.svg", 
   iconSize: [32, 32],          
   iconAnchor: [16, 32],        
   popupAnchor: [0, -32],       
+});
+
+const parkingIcon = L.icon({
+  iconUrl: "/parking_icon.svg",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
 });
 
 // 長崎駅付近の座標
@@ -198,7 +206,61 @@ const MapComponent = () => {
             </Popup>
           </Marker>
         ))}
-
+      
+      {/* parking.json から駐車場マーカーを描画*/}
+        {parking.map((spot: any) => (
+          <Marker
+            key={spot.id}
+            position={[spot.lat, spot.lng]}
+            icon={parkingIcon}
+          >
+            <Popup>
+              <div style={{ minWidth: "150px" }}>
+                <strong style={{ color: "#2563eb", fontSize: "14px" }}>
+                  {spot.name}
+                </strong>
+                {spot.description && (
+                  <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#374151" }}>
+                    {spot.description}
+                  </p>
+                )}
+                {spot.price && (
+                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    3時間での料金: {spot.price}
+                  </p>
+                )}
+                {spot.capacity && (
+                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    収容台数: {spot.capacity}台
+                  </p>
+                )}
+                {spot.twentyfour_h && (
+                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    24時間営業: {spot.twentyfour_h}
+                  </p>
+                )}
+                {spot.three_dim && (
+                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    立体駐車場: {spot.three_dim}
+                  </p>
+                )}
+                {spot.url && (
+                  <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    詳細は
+                    <a
+                      href={spot.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#2563eb", textDecoration: "underline" }}
+                    >
+                      こちら
+                    </a>
+                  </p>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
     </div>
   );
