@@ -25,6 +25,7 @@
     "cloudflared": "^0.7.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
+    "localtunnel": "^2.0.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
