@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "tunnel": "cloudflared tunnel --url http://localhost:3000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -21,6 +22,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cloudflared": "^0.7.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
