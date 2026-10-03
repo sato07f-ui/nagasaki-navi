@@ -1,13 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+} from "react-leaflet";
 import L from "leaflet"; // ← これを追加
 import intersections from "../data/intersection.json";
 import parking from "../data/parking.json";
 import { fetchRoute, LatLngTuple } from "../utils/RouteService";
+// spot.jsonから観光地データを追加
+import spotsData from "../data/spot.json";
 
 // Next.jsでLeafletのデフォルトマーカー画像が表示されない問題を解決
-delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;  // エラー回避のために修正
+delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl; // エラー回避のために修正
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -19,10 +27,10 @@ L.Icon.Default.mergeOptions({
 
 // アイコンの設定
 const dangerIcon = L.icon({
-  iconUrl: "/danger_icon.svg", 
-  iconSize: [32, 32],          
-  iconAnchor: [16, 32],        
-  popupAnchor: [0, -32],       
+  iconUrl: "/danger_icon.svg",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
 });
 
 const parkingIcon = L.icon({
@@ -35,13 +43,14 @@ const parkingIcon = L.icon({
 // 長崎駅付近の座標
 const startPosition: LatLngTuple = [32.752405, 129.871058];
 // 【Test】終着点を眼鏡橋に設定
-const goalPosition: LatLngTuple = [32.747180, 129.880092];
+const goalPosition: LatLngTuple = [32.74718, 129.880092];
 
 const MapComponent = () => {
-  
   const [routePositions, setRoutePositions] = useState<LatLngTuple[]>([]);
 
-  {/* ルート取得中のUI状態管理（ローディング・エラー・案内メッセージ） */}
+  {
+    /* ルート取得中のUI状態管理（ローディング・エラー・案内メッセージ） */
+  }
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
@@ -172,34 +181,39 @@ const MapComponent = () => {
           <Popup>眼鏡橋（目的地）</Popup>
         </Marker>
 
-
-      {/* APIから座標データが取得できたら道路沿いのルートを描画*/}
+        {/* APIから座標データが取得できたら道路沿いのルートを描画*/}
         {routePositions.length > 0 && (
           <Polyline
             positions={routePositions}
             pathOptions={{
-              color: "#2563eb", 
-              weight: 6,        
-              opacity: 0.8,    
-              lineCap: "round",  
-              lineJoin: "round", 
+              color: "#2563eb",
+              weight: 6,
+              opacity: 0.8,
+              lineCap: "round",
+              lineJoin: "round",
             }}
           />
         )}
-        
-      {/* JSONの交差点データをループしてビックリマークを描画 */}
+
+        {/* JSONの交差点データをループしてビックリマークを描画 */}
         {intersections.map((spot) => (
           <Marker
             key={spot.id}
             position={[spot.lat, spot.lng]}
-            icon={dangerIcon} 
+            icon={dangerIcon}
           >
             <Popup>
               <div style={{ minWidth: "150px" }}>
                 <strong style={{ color: "#d97706", fontSize: "14px" }}>
                   {spot.name}
                 </strong>
-                <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#374151" }}>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    fontSize: "12px",
+                    color: "#374151",
+                  }}
+                >
                   {spot.description}
                 </p>
               </div>
@@ -255,6 +269,42 @@ const MapComponent = () => {
                     >
                       こちら
                     </a>
+                    </p>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* 観光地（spot.json）のピンを描画 */}
+        {spotsData.map((spot) => (
+          <Marker key={`spot-${spot.id}`} position={[spot.lat, spot.lng]}>
+            <Popup>
+              <div style={{ minWidth: "160px" }}>
+                <strong style={{ color: "#1d4ed8", fontSize: "14px" }}>
+                  {spot.name}
+                </strong>
+                <p
+                  style={{
+                    margin: "4px 0 0",
+                    fontSize: "12px",
+                    color: "#374151",
+                  }}
+                >
+                  {spot.description}
+                </p>
+                {spot.osekkai_message && (
+                  <p
+                    style={{
+                      margin: "6px 0 0",
+                      fontSize: "11px",
+                      color: "#b45309",
+                      backgroundColor: "#fef3c7",
+                      padding: "4px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    💡 {spot.osekkai_message}
                   </p>
                 )}
               </div>
