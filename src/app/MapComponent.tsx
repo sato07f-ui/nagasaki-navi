@@ -274,12 +274,12 @@ export default function MapComponent({
 
   return (
     <div className="relative h-screen w-full">
-      {/* ルート探索状態のオーバーレイUI（目的地設定時のみ表示） */}
+      {/* スマホ最適化: 画面下部に配置するルート案内・目的地カード（上部メニューとの被りを解消） */}
       {spotId && (
-        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-[1000] w-11/12 max-w-md pointer-events-auto">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-1.5rem)] max-w-md pointer-events-auto">
           {/* ① ローディング表示 */}
           {isLoading && (
-            <div className="flex items-center gap-3 bg-white/95 backdrop-blur px-4 py-3 rounded-2xl shadow-lg border border-blue-100 text-blue-800">
+            <div className="flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3.5 shadow-2xl backdrop-blur-md border border-blue-200 text-blue-900 animate-pulse">
               <svg
                 className="animate-spin h-5 w-5 text-blue-600 shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
@@ -300,9 +300,9 @@ export default function MapComponent({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <div className="text-xs sm:text-sm font-medium">
+              <div className="text-xs sm:text-sm font-semibold">
                 {selectedSpot
-                  ? `「${selectedSpot.name}」向けの駐車場ルートを探索中...`
+                  ? `「${selectedSpot.name}」へのおすすめ駐車場ルートを探索中...`
                   : "初心者向け大通りルートを探索中..."}
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function MapComponent({
 
           {/* ② エラー時の警告表示 & 再試行ボタン */}
           {!isLoading && errorMessage && (
-            <div className="flex items-start justify-between gap-3 bg-red-50/95 backdrop-blur px-4 py-3 rounded-2xl shadow-lg border border-red-200 text-red-800">
+            <div className="flex items-start justify-between gap-3 rounded-2xl bg-red-50/95 px-4 py-3.5 shadow-2xl backdrop-blur-md border border-red-200 text-red-900">
               <div className="flex items-start gap-2">
                 <span className="text-lg leading-none">⚠️</span>
                 <div>
@@ -319,38 +319,89 @@ export default function MapComponent({
                 </div>
               </div>
               <button
+                type="button"
                 onClick={loadRoute}
-                className="shrink-0 bg-red-600 hover:bg-red-700 text-white text-xs px-2.5 py-1.5 rounded-xl transition-colors font-medium shadow-sm"
+                className="shrink-0 bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-xl transition-colors font-bold shadow-sm"
               >
                 再試行
               </button>
             </div>
           )}
 
-          {/* ③ ルート取得完了時の案内表示 */}
-          {!isLoading && !errorMessage && routeMessage && (
-            <div className="flex items-center justify-between gap-2 bg-white/95 backdrop-blur px-4 py-2.5 rounded-2xl shadow-md border border-slate-200 text-slate-700 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-base">🛣️</span>
-                <div>
-                  <p className="font-semibold text-slate-800">{routeMessage}</p>
-                  {targetParking && (
-                    <p className="text-[11px] text-slate-500">
-                      目的地: {selectedSpot?.name} → 案内先: {targetParking.name}
-                    </p>
+          {/* ③ ルート取得完了時の案内カード */}
+          {!isLoading && !errorMessage && selectedSpot && (
+            <div className="rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur-md border border-slate-200/90 text-slate-800 transition">
+              {/* カードヘッダー */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-base">
+                    🎯
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base leading-tight">
+                      {selectedSpot.name}
+                    </h3>
+                    {targetParking && (
+                      <p className="text-xs font-semibold text-blue-600 mt-0.5">
+                        🅿️ 案内先: {targetParking.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {onClearSpot && (
+                  <button
+                    type="button"
+                    onClick={onClearSpot}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 text-sm font-bold transition shrink-0"
+                    title="ルート案内を解除"
+                    aria-label="ルート解除"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* 駐車場メタ情報バッジ */}
+              {targetParking && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
+                  {targetParking.price && (
+                    <span className="rounded-lg bg-slate-100 px-2 py-0.5 font-medium">
+                      💴 {targetParking.price}
+                    </span>
+                  )}
+                  {targetParking.capacity && (
+                    <span className="rounded-lg bg-slate-100 px-2 py-0.5 font-medium">
+                      🚗 {targetParking.capacity}台
+                    </span>
+                  )}
+                  {targetParking.url && (
+                    <a
+                      href={targetParking.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg bg-blue-50 px-2 py-0.5 font-bold text-blue-600 hover:underline"
+                    >
+                      詳細 ↗
+                    </a>
                   )}
                 </div>
-              </div>
-              {onClearSpot && (
-                <button
-                  type="button"
-                  onClick={onClearSpot}
-                  className="shrink-0 text-slate-400 hover:text-slate-600 text-xs px-1.5 py-0.5"
-                  title="ルートを非表示"
-                >
-                  ✕
-                </button>
               )}
+
+              {/* 長崎ローカルおせっかいアドバイス */}
+              {selectedSpot.osekkai_message && (
+                <div className="mt-2.5 rounded-2xl bg-amber-50/90 p-2.5 text-xs text-amber-900 border border-amber-200/80 leading-relaxed font-medium">
+                  💡 {selectedSpot.osekkai_message}
+                </div>
+              )}
+
+              {/* フッター: ルート情報 */}
+              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <span className="flex items-center gap-1 font-semibold text-emerald-600">
+                  <span>🛣️</span> {routeMessage || "大通り優先ルートを案内中"}
+                </span>
+                <span className="text-[10px] text-slate-400">初心者安心</span>
+              </div>
             </div>
           )}
         </div>
@@ -359,6 +410,7 @@ export default function MapComponent({
       <MapContainer
         center={startPosition}
         zoom={13}
+        zoomControl={false}
         style={{ height: "100%", width: "100%" }}
       >
         <MapViewUpdater

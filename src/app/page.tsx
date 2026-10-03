@@ -146,29 +146,29 @@ function HomeContent() {
         onClearSpot={handleClearSpot}
       />
 
-      {/* 上部UI（Git前回のコミットのデザインを踏襲・ボタン連動） */}
-      <div className="absolute left-0 top-0 z-[9999] flex w-full flex-col gap-2 p-4 pointer-events-none">
+      {/* 上部UI: メニューおよび横スクロールカテゴリボタン（スマホ最適化・画面被り解消） */}
+      <div className="absolute left-0 top-0 z-[999] flex w-full flex-col gap-2 p-3 sm:p-4 pointer-events-none">
         <div className="flex items-center gap-2 pointer-events-auto w-full">
           {/* メニューボタン */}
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-2xl shadow-md transition hover:bg-slate-50 active:scale-95"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-xl shadow-md transition hover:bg-slate-50 active:scale-95 border border-slate-200/60"
             aria-label="メニュー"
           >
             ☰
           </button>
 
-          {/* カテゴリボタン群 */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
+          {/* カテゴリボタン群（横スクロール） */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 pr-2">
             {/* テストコース */}
             <button
               type="button"
               onClick={handleTestCourseClick}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium shadow-md transition active:scale-95 ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
                 activeCategory === "test-course" && selectedSpotId === "meganebashi"
-                  ? "bg-blue-600 text-white font-bold"
-                  : "bg-white text-slate-700 hover:bg-slate-50"
+                  ? "bg-blue-600 text-white border-blue-600 font-bold"
+                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
               }`}
             >
               🚗 テストコース
@@ -178,10 +178,10 @@ function HomeContent() {
             <button
               type="button"
               onClick={handleRecommendedClick}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium shadow-md transition active:scale-95 ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
                 isRecommendedOpen
-                  ? "bg-amber-500 text-white font-bold"
-                  : "bg-white text-slate-700 hover:bg-slate-50"
+                  ? "bg-amber-500 text-white border-amber-500 font-bold"
+                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
               }`}
             >
               ⭐ おすすめ
@@ -191,10 +191,10 @@ function HomeContent() {
             <button
               type="button"
               onClick={handleStampClick}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium shadow-md transition active:scale-95 ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
                 isStampModalOpen
-                  ? "bg-emerald-600 text-white font-bold"
-                  : "bg-white text-slate-700 hover:bg-slate-50"
+                  ? "bg-emerald-600 text-white border-emerald-600 font-bold"
+                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
               }`}
             >
               💮 スタンプ
@@ -204,60 +204,41 @@ function HomeContent() {
             <button
               type="button"
               onClick={handleParkingClick}
-              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium shadow-md transition active:scale-95 ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
                 isParkingModalOpen
-                  ? "bg-sky-600 text-white font-bold"
-                  : "bg-white text-slate-700 hover:bg-slate-50"
+                  ? "bg-sky-600 text-white border-sky-600 font-bold"
+                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
               }`}
             >
               🅿️ 駐車場
             </button>
           </div>
         </div>
-
-        {/* 目的地案内バッジ（目的地設定時のみ表示） */}
-        {selectedSpot && (
-          <div className="flex items-center gap-2 rounded-2xl bg-white/95 px-4 py-2.5 shadow-md backdrop-blur border border-blue-100 pointer-events-auto self-start">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-xs text-white font-bold">
-              🎯
-            </span>
-            <div className="text-xs">
-              <span className="font-bold text-slate-800">{selectedSpot.name}</span>
-              {targetParking && (
-                <span className="text-slate-500 ml-1.5 hidden sm:inline">
-                  (案内先: {targetParking.name})
-                </span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={handleClearSpot}
-              className="ml-2 rounded-lg bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600 hover:bg-slate-200 transition"
-              title="ルート案内を解除"
-            >
-              ✕ 解除
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* ① おすすめ観光地モーダル / ドロワー */}
+      {/* ① おすすめ観光地モーダル / ボトムシート */}
       {isRecommendedOpen && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-11/12 max-w-md pointer-events-auto">
-          <div className="rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur border border-amber-200">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+        <div
+          className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto"
+          onClick={() => setIsRecommendedOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-white p-4 shadow-2xl border border-amber-200 max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3 pb-2 border-b">
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
                 <span>⭐</span> 長崎のおすすめ観光地
               </h3>
               <button
                 type="button"
                 onClick={() => setIsRecommendedOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold px-2 py-0.5"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 text-sm font-bold"
               >
                 ✕
               </button>
             </div>
-            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-2 overflow-y-auto pr-1">
               {spotsData
                 .filter((s) => RECOMMENDED_SPOT_IDS.includes(s.id))
                 .map((spot) => {
@@ -266,18 +247,22 @@ function HomeContent() {
                   return (
                     <div
                       key={spot.id}
-                      className="flex items-center justify-between p-2.5 rounded-2xl bg-amber-50/70 border border-amber-100 hover:bg-amber-100/70 transition"
+                      className="flex items-center justify-between p-3 rounded-2xl bg-amber-50/70 border border-amber-100 hover:bg-amber-100/70 transition"
                     >
-                      <div className="text-left">
-                        <p className="text-xs font-bold text-slate-800">{spot.name}</p>
+                      <div className="text-left flex-1 pr-2">
+                        <p className="text-sm font-bold text-slate-800">{spot.name}</p>
                         {parking && (
-                          <p className="text-[10px] text-slate-500">🅿️ {parking.name}</p>
+                          <p className="text-xs text-blue-600 font-semibold mt-0.5">🅿️ {parking.name}</p>
                         )}
+                        <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{spot.description}</p>
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleSelectSpot(spot.id)}
-                        className={`text-xs px-3 py-1.5 rounded-xl font-bold shadow-sm transition ${
+                        onClick={() => {
+                          handleSelectSpot(spot.id);
+                          setIsRecommendedOpen(false);
+                        }}
+                        className={`text-xs px-3.5 py-2 rounded-xl font-bold shadow-sm transition shrink-0 ${
                           isSelected
                             ? "bg-emerald-600 text-white"
                             : "bg-blue-600 text-white hover:bg-blue-700"
@@ -295,8 +280,8 @@ function HomeContent() {
 
       {/* ② スタンプ帳モーダル */}
       {isStampModalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-2xl">
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto" onClick={() => setIsStampModalOpen(false)}>
+          <div className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-lg">
@@ -355,40 +340,49 @@ function HomeContent() {
         </div>
       )}
 
-      {/* ③ 駐車場一覧モーダル */}
+      {/* ③ 駐車場一覧モーダル / ボトムシート */}
       {isParkingModalOpen && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-11/12 max-w-md pointer-events-auto">
-          <div className="rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur border border-sky-200">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+        <div
+          className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto"
+          onClick={() => setIsParkingModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-white p-4 shadow-2xl border border-sky-200 max-h-[75vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3 pb-2 border-b">
+              <h3 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
                 <span>🅿️</span> 市内駐車場一覧（{parkingData.length}箇所）
               </h3>
               <button
                 type="button"
                 onClick={() => setIsParkingModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold px-2 py-0.5"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 text-sm font-bold"
               >
                 ✕
               </button>
             </div>
-            <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-2 overflow-y-auto pr-1">
               {parkingData.map((parking) => (
                 <div
                   key={parking.id}
-                  className="flex items-center justify-between p-2.5 rounded-2xl bg-sky-50/70 border border-sky-100"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-sky-50/70 border border-sky-100"
                 >
-                  <div className="text-left">
-                    <p className="text-xs font-bold text-slate-800">{parking.name}</p>
-                    <p className="text-[10px] text-slate-500">
+                  <div className="text-left flex-1 pr-2">
+                    <p className="text-sm font-bold text-slate-800">{parking.name}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {parking.price || "料金情報あり"} / 収容 {parking.capacity || "-"}台
                     </p>
+                    {parking.twentyfour_h && (
+                      <p className="text-[11px] text-slate-400">{parking.twentyfour_h}</p>
+                    )}
                   </div>
                   {parking.url && (
                     <a
                       href={parking.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-sky-600 underline font-semibold px-2 py-1"
+                      className="text-xs text-sky-600 underline font-semibold px-2 py-1 shrink-0"
                     >
                       詳細
                     </a>

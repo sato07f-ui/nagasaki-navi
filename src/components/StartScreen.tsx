@@ -156,12 +156,12 @@ export default function StartScreen() {
 
   return (
     <main
-      className="min-h-screen bg-cover bg-[center_10%] bg-no-repeat"
+      className="min-h-dvh overflow-y-auto bg-cover bg-[center_10%] bg-no-repeat flex flex-col"
       style={{
         backgroundImage: "url('/start_haikei.jpg')",
       }}
     >
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 py-5">
+      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-between px-5 py-4 pb-8">
         {/* 上部 */}
         <div className="flex items-center justify-between">
           <button
