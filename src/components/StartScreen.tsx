@@ -43,8 +43,8 @@ export default function StartScreen() {
   // 地図画面へ遷移するURL（現在地があればパラメータに付与）
   const mapUrl =
     latitude !== null && longitude !== null
-      ? `/?startLat=${latitude}&startLng=${longitude}`
-      : "/";
+      ? `/map?startLat=${latitude}&startLng=${longitude}`
+      : "/map";
 
   // 2点間の距離計算（m）
   const getDistance = (
@@ -151,7 +151,7 @@ export default function StartScreen() {
     const startLat = latitude ?? DEFAULT_START.lat;
     const startLng = longitude ?? DEFAULT_START.lng;
 
-    router.push(`/?startLat=${startLat}&startLng=${startLng}&spotId=${destination}`);
+    router.push(`/map?startLat=${startLat}&startLng=${startLng}&spotId=${destination}`);
   };
 
   return (
@@ -745,7 +745,7 @@ export default function StartScreen() {
 
               {/* テストコース */}
               <Link
-                href="/?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
+                href="/map?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
                 className="flex items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-pink-50"
               >
                 <span>🚗</span>
