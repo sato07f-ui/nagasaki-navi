@@ -86,6 +86,11 @@
     "lng": 129.8788,
     "description": "長崎市最大の繁華街。ご当地グルメやお土産探しに最適です。",
     "osekkai_message": "長崎一の繁華街やけん、周辺の駐車場はすぐ埋まるよ！少し離れた銅座町あたりに停めて歩くか、路面電車で来るのがよかよ。",
-    "train_id": "fifth"
+    "tram_guide": {
+      "board_stop": "思案橋",
+      "line": "1",
+      "direction": "赤迫",
+      "alight_stop": "西浜町"
+    }
   }
 ]
