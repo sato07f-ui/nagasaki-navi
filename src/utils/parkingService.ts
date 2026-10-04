@@ -1,6 +1,14 @@
 import spotsData from "../data/spot.json";
 import parkingsData from "../data/parking.json";
 
+// 駐車場から目的地まで路面電車で移動する場合の案内
+export interface TramGuide {
+  board_stop: string; // 乗車停留所
+  line: string; // 系統番号
+  direction: string; // 行き先
+  alight_stop: string; // 降車停留所
+}
+
 export interface SpotItem {
   id: string;
   name: string;
@@ -9,6 +17,7 @@ export interface SpotItem {
   description: string;
   osekkai_message?: string;
   recommended_parking_id?: string;
+  tram_guide?: TramGuide;
 }
 
 export interface ParkingItem {
@@ -21,6 +30,8 @@ export interface ParkingItem {
   twentyfour_h?: string;
   three_dim?: string;
   url?: string;
+  walk_lat?: number; // 歩行者用出口の緯度（徒歩ルートの始点。未設定なら lat を使用）
+  walk_lng?: number; // 歩行者用出口の経度（未設定なら lng を使用）
   spot_key: string | string[];
 }
 

@@ -189,7 +189,9 @@ export default function MapComponent({
 
   // 徒歩ルートの始点（駐車場）と終点（観光地）。駐車場がない観光地では徒歩ルートなし
   const walkFrom: LatLngTuple | null = useMemo(() => {
-    return targetParking && selectedSpot ? [targetParking.lat, targetParking.lng] : null;
+    if (!targetParking || !selectedSpot) return null;
+    // 歩行者用出口の座標があればそちらを始点にする（遠回り防止）
+    return [targetParking.walk_lat ?? targetParking.lat, targetParking.walk_lng ?? targetParking.lng];
   }, [targetParking, selectedSpot]);
   const walkTo: LatLngTuple | null = useMemo(() => {
     return targetParking && selectedSpot ? [selectedSpot.lat, selectedSpot.lng] : null;
@@ -376,6 +378,19 @@ export default function MapComponent({
               {selectedSpot.osekkai_message && (
                 <div className="map-osekkai-box">
                   💡 {selectedSpot.osekkai_message}
+                </div>
+              )}
+
+              {/* 駐車場から目的地までの路面電車案内 */}
+              {selectedSpot.tram_guide && (
+                <div className="map-tram-box">
+                  <p className="map-tram-title">🚃 路面電車でも行けるよ</p>
+                  <p className="map-tram-detail">
+                    <strong>{selectedSpot.tram_guide.board_stop}</strong> から
+                    <span className="map-tram-line-badge">{selectedSpot.tram_guide.line}</span>
+                    <strong>{selectedSpot.tram_guide.direction}行き</strong> に乗って
+                    <strong>{selectedSpot.tram_guide.alight_stop}</strong> で下車
+                  </p>
                 </div>
               )}
 
