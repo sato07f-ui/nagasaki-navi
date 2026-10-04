@@ -1,0 +1,534 @@
+/* ========================================================
+   MapComponent Styles (Reusable & DRY)
+   ======================================================== */
+
+/* --------------------------------------------------------
+   1. 地図ベースコンテナ & Leaflet マーカー
+   -------------------------------------------------------- */
+.map-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+.map-container-root {
+  height: 100%;
+  width: 100%;
+}
+
+/* カスタムマーカーピン共通スタイル (DRY) */
+.map-marker-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  color: #ffffff;
+  user-select: none;
+}
+
+.map-marker-start {
+  width: 36px;
+  height: 36px;
+  background-color: #2563eb;
+  font-size: 18px;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+.map-marker-destination {
+  width: 42px;
+  height: 42px;
+  background-color: #dc2626;
+  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(220, 38, 26, 0.5);
+}
+
+.map-marker-spot {
+  width: 36px;
+  height: 36px;
+  background-color: #f59e0b;
+  font-size: 20px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.5);
+}
+
+/* --------------------------------------------------------
+   2. 地図上ポップアップ (Leaflet Popup) 共通スタイル
+   -------------------------------------------------------- */
+.map-popup-card {
+  min-width: 150px;
+}
+
+.map-popup-card.wide {
+  min-width: 180px;
+  max-width: 250px;
+}
+
+.map-popup-badge-dest {
+  display: inline-block;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.map-popup-title {
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0;
+  display: block;
+}
+
+.map-popup-title.large {
+  font-size: 15px;
+}
+
+.map-popup-title.blue {
+  color: #2563eb;
+}
+
+.map-popup-title.primary {
+  color: #1d4ed8;
+}
+
+.map-popup-title.red {
+  color: #dc2626;
+}
+
+.map-popup-title.warning {
+  color: #d97706;
+}
+
+.map-popup-desc {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.4;
+}
+
+.map-popup-meta {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.map-popup-subtle {
+  color: #4b5563;
+}
+
+.map-popup-highlight {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.map-popup-banner {
+  margin: 6px 0;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.map-popup-banner-amber {
+  color: #b45309;
+  background-color: #fef3c7;
+}
+
+.map-popup-banner-blue {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.map-popup-link {
+  color: #2563eb;
+  text-decoration: underline;
+  font-size: 11px;
+}
+
+.map-popup-link:hover {
+  color: #1d4ed8;
+}
+
+.map-popup-action-btn {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #ffffff;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.map-popup-action-btn:active {
+  transform: scale(0.98);
+}
+
+.map-popup-action-btn.selected {
+  background-color: #059669;
+}
+
+.map-popup-action-btn.unselected {
+  background-color: #2563eb;
+}
+
+.map-popup-action-btn.unselected:hover {
+  background-color: #1d4ed8;
+}
+
+/* --------------------------------------------------------
+   3. 下部固定案内カード (Route Guide Cards)
+   -------------------------------------------------------- */
+.map-bottom-overlay {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: calc(100% - 1.5rem);
+  max-width: 28rem;
+  pointer-events: auto;
+}
+
+/* 共通グラスモーフィズムカード (DRY) */
+.map-glass-card {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid;
+  transition: all 0.2s ease-in-out;
+}
+
+/* ① ローディングカード */
+.map-loading-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 0.875rem 1rem;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+  animation: map-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.map-loading-spinner {
+  height: 1.25rem;
+  width: 1.25rem;
+  flex-shrink: 0;
+  color: #2563eb;
+  animation: map-spin 1s linear infinite;
+}
+
+.map-loading-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ② エラーカード */
+.map-error-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  background-color: rgba(254, 242, 242, 0.95);
+  padding: 0.875rem 1rem;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+.map-error-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.map-error-icon {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.map-error-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.map-error-msg {
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.125rem;
+  margin-bottom: 0;
+}
+
+.map-retry-btn {
+  flex-shrink: 0;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.map-retry-btn:hover {
+  background-color: #b91c1c;
+}
+
+.map-retry-btn:active {
+  transform: scale(0.95);
+}
+
+/* ③ ルート案内メインカード */
+.map-info-card {
+  border-radius: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-color: rgba(226, 232, 240, 0.9);
+  color: #1e293b;
+}
+
+.map-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.map-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-spot-badge-icon {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: #fef3c7;
+  font-size: 1rem;
+}
+
+.map-spot-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.map-spot-parking-sub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin-top: 0.125rem;
+  margin-bottom: 0;
+}
+
+.map-close-btn {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.map-close-btn:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+/* ルート凡例バッジ共通 (DRY) */
+.map-legend-row {
+  margin-top: 0.625rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.map-legend-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.625rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.map-legend-chip.drive {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: rgba(191, 219, 254, 0.7);
+}
+
+.map-legend-chip.walk {
+  background-color: #faf5ff;
+  color: #7e22ce;
+  border-color: rgba(233, 213, 255, 0.7);
+}
+
+.map-legend-dot {
+  height: 0.5rem;
+  width: 1rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.map-legend-dot.drive {
+  background-color: #2563eb;
+}
+
+.map-legend-dot.walk {
+  background-color: #9333ea;
+}
+
+/* 駐車場メタ情報バッジ群 (DRY) */
+.map-meta-tags {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 11px;
+  color: #475569;
+}
+
+.map-tag-chip {
+  border-radius: 0.5rem;
+  background-color: #f1f5f9;
+  padding: 0.125rem 0.5rem;
+  font-weight: 500;
+}
+
+.map-tag-chip.link {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.map-tag-chip.link:hover {
+  text-decoration: underline;
+}
+
+/* おせっかいメッセージボックス */
+.map-osekkai-box {
+  margin-top: 0.625rem;
+  border-radius: 1rem;
+  background-color: rgba(254, 243, 199, 0.9);
+  padding: 0.625rem;
+  font-size: 0.75rem;
+  color: #78350f;
+  border: 1px solid rgba(253, 230, 138, 0.8);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* 路面電車案内ボックス */
+.map-tram-box {
+  margin-top: 0.5rem;
+  border-radius: 1rem;
+  background-color: rgba(220, 252, 231, 0.9);
+  padding: 0.625rem;
+  font-size: 0.75rem;
+  color: #14532d;
+  border: 1px solid rgba(187, 247, 208, 0.8);
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.map-tram-title {
+  margin: 0 0 0.125rem;
+  font-weight: 700;
+}
+
+.map-tram-detail {
+  margin: 0;
+}
+
+/* 系統番号バッジ */
+.map-tram-line-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0 0.25rem;
+  border-radius: 9999px;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+/* カードフッター */
+.map-card-footer {
+  margin-top: 0.625rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.map-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.map-footer-note {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* アニメーション */
+@keyframes map-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes map-pulse {
+  50% {
+    opacity: 0.75;
+  }
+}
