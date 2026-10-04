@@ -91,11 +91,13 @@ function MapViewUpdater({
   start,
   goal,
   routePositions,
+  walkingPositions,
   hasDestination,
 }: {
   start: LatLngTuple;
   goal: LatLngTuple | null;
   routePositions: LatLngTuple[];
+  walkingPositions: LatLngTuple[];
   hasDestination: boolean;
 }) {
   const map = useMap();
@@ -108,13 +110,14 @@ function MapViewUpdater({
     }
 
     if (routePositions.length > 0) {
-      const bounds = L.latLngBounds(routePositions);
+      // 車ルートと徒歩ルート（駐車場〜観光地）の両方が収まるように調整
+      const bounds = L.latLngBounds([...routePositions, ...walkingPositions]);
       map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
     } else if (goal) {
       const bounds = L.latLngBounds([start, goal]);
       map.fitBounds(bounds, { padding: [80, 80], maxZoom: 15 });
     }
-  }, [map, start, goal, routePositions, hasDestination]);
+  }, [map, start, goal, routePositions, walkingPositions, hasDestination]);
 
   return null;
 }
@@ -128,6 +131,26 @@ export interface MapComponentProps {
 }
 
 const DEFAULT_START: LatLngTuple = [32.752405, 129.871058]; // 長崎駅
+
+/**
+ * 車ルート（出発地〜ゴール）と徒歩ルート（駐車場〜観光地）をまとめて取得する
+ * 徒歩ルートは walkFrom / walkTo が両方ある場合のみ取得し、失敗しても車ルートの結果は返す
+ */
+async function fetchRoutes(
+  start: LatLngTuple,
+  goal: LatLngTuple,
+  walkFrom: LatLngTuple | null,
+  walkTo: LatLngTuple | null
+) {
+  const [driving, walking] = await Promise.all([
+    fetchRoute(start, goal, "driving"),
+    walkFrom && walkTo ? fetchRoute(walkFrom, walkTo, "walking") : Promise.resolve(null),
+  ]);
+  return {
+    driving,
+    walkingCoordinates: walking && !walking.error ? walking.coordinates : [],
+  };
+}
 
 export default function MapComponent({
   startLat,
@@ -164,35 +187,49 @@ export default function MapComponent({
     return null;
   }, [spotId, targetParking, selectedSpot]);
 
+  // 徒歩ルートの始点（駐車場）と終点（観光地）。駐車場がない観光地では徒歩ルートなし
+  const walkFrom: LatLngTuple | null = useMemo(() => {
+    return targetParking && selectedSpot ? [targetParking.lat, targetParking.lng] : null;
+  }, [targetParking, selectedSpot]);
+  const walkTo: LatLngTuple | null = useMemo(() => {
+    return targetParking && selectedSpot ? [selectedSpot.lat, selectedSpot.lng] : null;
+  }, [targetParking, selectedSpot]);
+
   const [routePositions, setRoutePositions] = useState<LatLngTuple[]>([]);
+  const [walkingPositions, setWalkingPositions] = useState<LatLngTuple[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
 
-  // ルート探索
+  // 取得結果を state に反映
+  const applyRoutes = ({ driving, walkingCoordinates }: Awaited<ReturnType<typeof fetchRoutes>>) => {
+    if (driving.error) {
+      setErrorMessage(driving.error);
+      setRoutePositions([]);
+      setWalkingPositions([]);
+      setRouteMessage(null);
+    } else {
+      setRoutePositions(driving.coordinates);
+      setWalkingPositions(walkingCoordinates);
+      setRouteMessage(driving.message || "ルートを取得しました");
+    }
+    setIsLoading(false);
+  };
+
+  // ルート探索（再試行ボタン用）
   const loadRoute = async () => {
     if (!goalPosition) return;
     setIsLoading(true);
     setErrorMessage(null);
 
-    const result = await fetchRoute(startPosition, goalPosition);
-
-    if (result.error) {
-      setErrorMessage(result.error);
-      setRoutePositions([]);
-      setRouteMessage(null);
-    } else {
-      setRoutePositions(result.coordinates);
-      setRouteMessage(result.message || "ルートを取得しました");
-    }
-
-    setIsLoading(false);
+    applyRoutes(await fetchRoutes(startPosition, goalPosition, walkFrom, walkTo));
   };
 
   useEffect(() => {
     // 目的地が選択されていない場合はルートをクリアして探索しない
     if (!goalPosition) {
       setRoutePositions([]);
+      setWalkingPositions([]);
       setIsLoading(false);
       setErrorMessage(null);
       setRouteMessage(null);
@@ -206,19 +243,10 @@ export default function MapComponent({
       setIsLoading(true);
       setErrorMessage(null);
 
-      const result = await fetchRoute(startPosition, goalPosition);
+      const result = await fetchRoutes(startPosition, goalPosition, walkFrom, walkTo);
       if (ignore) return;
 
-      if (result.error) {
-        setErrorMessage(result.error);
-        setRoutePositions([]);
-        setRouteMessage(null);
-      } else {
-        setRoutePositions(result.coordinates);
-        setRouteMessage(result.message || "ルートを取得しました");
-      }
-
-      setIsLoading(false);
+      applyRoutes(result);
     }
 
     execute();
@@ -226,7 +254,7 @@ export default function MapComponent({
     return () => {
       ignore = true;
     };
-  }, [startPosition, goalPosition]);
+  }, [startPosition, goalPosition, walkFrom, walkTo]);
 
   return (
     <div className="map-wrapper">
@@ -373,6 +401,7 @@ export default function MapComponent({
           start={startPosition}
           goal={goalPosition}
           routePositions={routePositions}
+          walkingPositions={walkingPositions}
           hasDestination={!!spotId}
         />
 
@@ -456,6 +485,21 @@ export default function MapComponent({
               color: "#2563eb",
               weight: 6,
               opacity: 0.85,
+              lineCap: "round",
+              lineJoin: "round",
+            }}
+          />
+        )}
+
+        {/* 駐車場から観光地までの徒歩ルート（紫の点線） */}
+        {walkingPositions.length > 0 && (
+          <Polyline
+            positions={walkingPositions}
+            pathOptions={{
+              color: "#9333ea",
+              weight: 5,
+              opacity: 0.9,
+              dashArray: "2 10",
               lineCap: "round",
               lineJoin: "round",
             }}
