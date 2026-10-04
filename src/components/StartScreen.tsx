@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Caveat, Zen_Maru_Gothic } from "next/font/google";
 import spots from "../data/spot.json";
 import parkings from "../data/parking.json";
+import "./StartScreen.css";
 
 const caveat = Caveat({ 
   subsets: ["latin"], 
@@ -31,7 +32,7 @@ export default function StartScreen() {
   const [isLocating, setIsLocating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // feature/startscreen 由来の状態
+  // モーダル・メニュー状態
   const [showSpots, setShowSpots] = useState(false);
   const [showStamps, setShowStamps] = useState(false);
   const [showParkings, setShowParkings] = useState(false);
@@ -40,7 +41,7 @@ export default function StartScreen() {
     "chinatown",
   ]);
 
-  // 地図画面へ遷移するURL（現在地があればパラメータに付与）
+  // 地図画面へ遷移するURL
   const mapUrl =
     latitude !== null && longitude !== null
       ? `/?startLat=${latitude}&startLng=${longitude}`
@@ -53,7 +54,7 @@ export default function StartScreen() {
     lat2: number,
     lng2: number
   ) => {
-    const R = 6371000; // 地球の半径（m）
+    const R = 6371000;
     const toRad = (value: number) => (value * Math.PI) / 180;
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);
@@ -87,7 +88,6 @@ export default function StartScreen() {
       setLongitude(lng);
       setIsLocating(false);
 
-      // 現在地から50m以内の観光地を探してスタンプ獲得
       const nearbySpots = spots.filter((spot) => {
         const distance = getDistance(lat, lng, spot.lat, spot.lng);
         return distance <= 50;
@@ -155,19 +155,14 @@ export default function StartScreen() {
   };
 
   return (
-    <main
-      className="min-h-dvh overflow-y-auto bg-cover bg-[center_10%] bg-no-repeat flex flex-col"
-      style={{
-        backgroundImage: "url('/start_haikei.jpg')",
-      }}
-    >
-      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-between px-5 py-4 pb-8">
-        {/* 上部 */}
-        <div className="flex items-center justify-between">
+    <main className="start-screen-main">
+      <div className="start-container">
+        {/* ヘッダー */}
+        <div className="flex-between">
           <button
             type="button"
             onClick={() => setShowMenu(true)}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl text-slate-700 shadow-md transition hover:bg-slate-50 active:scale-95"
+            className="circle-btn size-11"
             aria-label="メニュー"
           >
             ☰
@@ -176,41 +171,25 @@ export default function StartScreen() {
           <button
             type="button"
             onClick={() => setShowParkings(true)}
-            className="flex items-center gap-2 rounded-full border border-white/40 bg-white/60 px-4 py-2 text-sm font-semibold text-blue-600 shadow-md backdrop-blur-md transition hover:bg-white/75 active:scale-95"
+            className="header-parking-btn"
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-sky-500 text-xs font-bold text-white">
-              P
-            </span>
+            <span className="badge-p">P</span>
             駐車場を探す
           </button>
         </div>
 
-        {/* タイトル */}
-        <div className="mt-6 text-center">
-          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/70 shadow-sm">
+        {/* ヒーロータイトル */}
+        <div className="flex-col-center mt-6">
+          <div className="icon-circle hero">
             <svg
               viewBox="0 0 64 64"
-              className="h-11 w-11"
+              className="svg-icon size-11"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* 帆 */}
-              <path
-                d="M31 10V36H14L31 10Z"
-                fill="#60A5FA"
-              />
-              <path
-                d="M34 16V36H49L34 16Z"
-                fill="#2563EB"
-              />
-
-              {/* 船 */}
-              <path
-                d="M12 38H52L47 47H18L12 38Z"
-                fill="#1D4ED8"
-              />
-
-              {/* 波 */}
+              <path d="M31 10V36H14L31 10Z" fill="#60A5FA" />
+              <path d="M34 16V36H49L34 16Z" fill="#2563EB" />
+              <path d="M12 38H52L47 47H18L12 38Z" fill="#1D4ED8" />
               <path
                 d="M10 51C15 47 20 55 25 51C30 47 35 55 40 51C45 47 50 55 55 51"
                 stroke="#38BDF8"
@@ -220,53 +199,42 @@ export default function StartScreen() {
             </svg>
           </div>
 
-          <h1 className={`${caveat.className} text-5xl font-semibold text-blue-700`}>
+          <h1 className={`${caveat.className} hero-title`}>
             Nagasaki Navi
           </h1>
 
-          <p className={`${zenMaruGothic.className} mt-3 text-sm font-medium text-amber-950/80`}>
+          <p className={`${zenMaruGothic.className} hero-subtitle`}>
             長崎を、もっと自由に、もっと快適に。
           </p>
         </div>
 
         {/* 検索カード */}
-        <div className="mt-8 rounded-3xl border border-white/40 bg-white/60 p-5 shadow-xl">
-          {/* 出発地・目的地 */}
-          <div className="relative">
-            {/* 左側のルート線 */}
-            <div className="absolute left-[9px] top-[29px] h-[82px] border-l-2 border-dotted border-slate-300" />
+        <div className="glass-panel search-panel-padding">
+          <div className="route-form">
+            <div className="route-dotted-line" />
 
             {/* 出発地 */}
-            <div className="relative flex gap-3">
-              {/* 青い丸 */}
-              <div className="mt-[6px] h-[18px] w-[18px] shrink-0 rounded-full border-[5px] border-blue-500 bg-white" />
+            <div className="point-row">
+              <div className="point-circle-blue" />
 
               <div className="w-full">
-                <label className="mb-2 block text-sm font-bold text-slate-700">
-                  出発地
-                </label>
+                <label className="form-label">出発地</label>
 
                 <button
                   type="button"
                   onClick={getCurrentLocation}
                   disabled={isLocating}
-                  className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white/50 px-4 py-4 text-left text-sm text-slate-700 outline-none transition hover:bg-white/70 disabled:opacity-60"
+                  className="form-input-box clickable"
                 >
-                  <span className="truncate pr-2">{location}</span>
+                  <span className="truncate-text">{location}</span>
 
                   <svg
                     viewBox="0 0 24 24"
-                    className={`h-5 w-5 shrink-0 text-blue-500 ${isLocating ? "animate-spin" : ""}`}
+                    className={`svg-icon size-5 text-blue ${isLocating ? "animate-spin" : ""}`}
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="4"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    />
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
                     <path
                       d="M12 2V5M12 19V22M2 12H5M19 12H22"
                       stroke="currentColor"
@@ -278,16 +246,14 @@ export default function StartScreen() {
               </div>
             </div>
 
-            {/* 間隔 */}
-            <div className="h-5" />
+            <div className="spacer-5" />
 
             {/* 目的地 */}
-            <div className="relative flex gap-3">
-              {/* 赤いピン */}
-              <div className="mt-[4px] flex h-[20px] w-[18px] shrink-0 items-center justify-center">
+            <div className="point-row">
+              <div className="point-pin-red">
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-5 w-5"
+                  className="svg-icon size-5"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -300,14 +266,12 @@ export default function StartScreen() {
               </div>
 
               <div className="w-full">
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-sm font-bold text-slate-700">
-                    目的地
-                  </label>
+                <div className="flex-between mb-2">
+                  <label className="form-label no-margin">目的地</label>
                   <button
                     type="button"
                     onClick={() => setShowSpots(true)}
-                    className="text-xs font-bold text-blue-600 hover:underline"
+                    className="choose-spot-link"
                   >
                     観光地から選ぶ ➔
                   </button>
@@ -319,7 +283,7 @@ export default function StartScreen() {
                     setDestination(e.target.value);
                     if (errorMsg) setErrorMsg(null);
                   }}
-                  className="w-full rounded-2xl border border-slate-200 bg-white/50 px-4 py-4 text-sm text-slate-700 outline-none transition focus:border-blue-400 focus:bg-white/70"
+                  className="form-input-box"
                 >
                   <option value="" disabled>
                     目的地を選択
@@ -334,22 +298,20 @@ export default function StartScreen() {
             </div>
           </div>
 
-          {/* エラーメッセージ表示 */}
+          {/* エラーメッセージ */}
           {errorMsg && (
-            <div className="mt-3 rounded-xl bg-red-100/90 px-3 py-2 text-xs font-semibold text-red-700">
-              ⚠️ {errorMsg}
-            </div>
+            <div className="error-banner">⚠️ {errorMsg}</div>
           )}
 
           {/* ルート検索ボタン */}
           <button
             type="button"
             onClick={handleSearchRoute}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-500 py-4 font-bold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.98]"
+            className="btn-primary mt-5"
           >
             <svg
               viewBox="0 0 24 24"
-              className="h-5 w-5"
+              className="svg-icon size-5"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -365,20 +327,17 @@ export default function StartScreen() {
           </button>
 
           {/* 区切り */}
-          <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs text-slate-400">または</span>
-            <div className="h-px flex-1 bg-slate-200" />
+          <div className="or-divider">
+            <div className="or-divider-line" />
+            <span className="or-divider-text">または</span>
+            <div className="or-divider-line" />
           </div>
 
           {/* 地図から探す */}
-          <Link
-            href={mapUrl}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-300 bg-white py-4 font-semibold text-blue-600 transition hover:bg-blue-50 active:scale-[0.98]"
-          >
+          <Link href={mapUrl} className="btn-outline">
             <svg
               viewBox="0 0 24 24"
-              className="h-5 w-5"
+              className="svg-icon size-5"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -394,67 +353,51 @@ export default function StartScreen() {
           </Link>
         </div>
 
-        {/* 下部メニュー */}
-        <div className="mt-auto pt-6">
-          <div className="grid grid-cols-3 gap-3 rounded-3xl border border-white/40 bg-white/50 p-3 shadow-lg backdrop-blur-md">
+        {/* ボトムナビゲーション */}
+        <div className="bottom-nav-wrapper">
+          <div className="glass-panel bottom-nav-grid">
             {/* 観光地 */}
             <button
               type="button"
               onClick={() => setShowSpots(true)}
-              className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95"
+              className="bottom-nav-card"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
+              <div className="icon-circle pink">
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-7 w-7 text-pink-500"
+                  className="svg-icon size-7 text-pink"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="M8 4H16L15 9L18 12H6L9 9L8 4Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M12 12V20"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <path d="M8 4H16L15 9L18 12H6L9 9L8 4Z" fill="currentColor" />
+                  <path d="M12 12V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-
-              <span className="mt-2 text-xs font-medium text-slate-600">
-                観光地
-              </span>
+              <span className="bottom-nav-label">観光地</span>
             </button>
 
             {/* 駐車場 */}
             <button
               type="button"
               onClick={() => setShowParkings(true)}
-              className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95"
+              className="bottom-nav-card"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500 text-sm font-bold text-white">
-                  P
-                </div>
+              <div className="icon-circle sky">
+                <div className="badge-p">P</div>
               </div>
-
-              <span className="mt-2 text-xs font-medium text-slate-600">
-                駐車場一覧
-              </span>
+              <span className="bottom-nav-label">駐車場一覧</span>
             </button>
 
             {/* スタンプ */}
             <button
               type="button"
               onClick={() => setShowStamps(true)}
-              className="flex flex-col items-center rounded-2xl border border-white/30 bg-white/35 p-3 backdrop-blur-sm transition hover:bg-white/50 active:scale-95"
+              className="bottom-nav-card"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+              <div className="icon-circle emerald">
                 <svg
                   viewBox="0 0 24 24"
-                  className="h-6 w-6 text-emerald-500"
+                  className="svg-icon size-6 text-emerald"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -464,24 +407,11 @@ export default function StartScreen() {
                     strokeWidth="2"
                     strokeLinecap="round"
                   />
-                  <path
-                    d="M6 14H18V18H6V14Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 21H16"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <path d="M6 14H18V18H6V14Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M8 21H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-
-              <span className="mt-2 text-xs font-medium text-slate-600">
-                スタンプ
-              </span>
+              <span className="bottom-nav-label">スタンプ</span>
             </button>
           </div>
         </div>
@@ -489,51 +419,38 @@ export default function StartScreen() {
 
       {/* 観光地一覧モーダル */}
       {showSpots && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
-          <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/80 p-5 shadow-2xl backdrop-blur-md">
-            {/* タイトル */}
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-800">
-                観光地一覧
-              </h2>
-
+        <div className="modal-overlay">
+          <div className="modal-dialog">
+            <div className="flex-between mb-5">
+              <h2 className="modal-title">観光地一覧</h2>
               <button
                 type="button"
                 onClick={() => setShowSpots(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+                className="circle-btn size-9"
               >
                 ×
               </button>
             </div>
 
-            {/* 観光地 */}
-            <div className="space-y-3">
+            <div>
               {spots.map((spot) => (
                 <div
                   key={spot.id}
-                  className="rounded-2xl bg-white/70 p-4 transition hover:bg-white cursor-pointer"
+                  className="list-item-card clickable"
                   onClick={() => {
                     setDestination(spot.id);
                     setShowSpots(false);
                     if (errorMsg) setErrorMsg(null);
                   }}
                 >
-                  <div className="flex gap-3">
-                    <span className="text-pink-500">📌</span>
-
+                  <div className="flex-row-gap">
+                    <span className="text-pink">📌</span>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-slate-800">
-                          {spot.name}
-                        </h3>
-                        <span className="text-xs font-semibold text-blue-600">
-                          選択 ➔
-                        </span>
+                      <div className="flex-between">
+                        <h3 className="spot-name-header">{spot.name}</h3>
+                        <span className="spot-select-text">選択 ➔</span>
                       </div>
-
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        {spot.description}
-                      </p>
+                      <p className="spot-desc">{spot.description}</p>
                     </div>
                   </div>
                 </div>
@@ -545,90 +462,62 @@ export default function StartScreen() {
 
       {/* スタンプ帳モーダル */}
       {showStamps && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
-          <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/85 p-5 shadow-2xl backdrop-blur-md">
-            {/* タイトル */}
-            <div className="mb-2 flex items-center justify-between">
+        <div className="modal-overlay">
+          <div className="modal-dialog">
+            <div className="flex-between mb-2">
               <div>
-                <h2 className="text-xl font-bold text-slate-800">
-                  長崎スタンプ帳
-                </h2>
-                <p className="mt-1 text-xs text-slate-500">
-                  観光地を巡ってスタンプを集めよう！
-                </p>
+                <h2 className="modal-title">長崎スタンプ帳</h2>
+                <p className="modal-subtitle">観光地を巡ってスタンプを集めよう！</p>
               </div>
-
               <button
                 type="button"
                 onClick={() => setShowStamps(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+                className="circle-btn size-9"
               >
                 ×
               </button>
             </div>
 
-            {/* 獲得数 */}
             <div className="my-5 text-center">
-              <span className="text-2xl font-bold text-emerald-500">
+              <span className="font-xl text-emerald">
                 {collectedStamps.length}
               </span>
-              <span className="text-sm font-semibold text-slate-500">
+              <span className="font-sm text-muted">
                 {" "} / {spots.length} GET!
               </span>
             </div>
 
-            {/* スタンプ一覧 */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="stamp-grid">
               {spots.map((spot) => (
-                <div
-                  key={spot.id}
-                  className="flex flex-col items-center rounded-2xl bg-white/70 p-4"
-                >
+                <div key={spot.id} className="list-item-card flex-col-center">
                   {collectedStamps.includes(spot.id) ? (
-                    /* 獲得済み */
-                    <div className="flex h-20 w-20 rotate-[-8deg] items-center justify-center rounded-full border-4 border-emerald-400 bg-emerald-50">
-                      <div className="text-center text-emerald-500">
-                        <div className="text-2xl font-black">✓</div>
-                        <div className="text-[10px] font-bold">GET!</div>
+                    <div className="stamp-seal got">
+                      <div>
+                        <div className="stamp-check">✓</div>
+                        <div className="stamp-label">GET!</div>
                       </div>
                     </div>
                   ) : (
-                    /* 未獲得 */
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-slate-300 bg-slate-50">
+                    <div className="stamp-seal empty">
                       <svg
                         viewBox="0 0 24 24"
-                        className="h-7 w-7 text-slate-300"
+                        className="svg-icon size-7 text-dim"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <rect
-                          x="6"
-                          y="10"
-                          width="12"
-                          height="10"
-                          rx="2"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        />
-                        <path
-                          d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
+                        <rect x="6" y="10" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                     </div>
                   )}
 
-                  <p className="mt-3 text-center text-sm font-bold text-slate-700">
-                    {spot.name}
-                  </p>
+                  <p className="stamp-spot-title">{spot.name}</p>
 
                   <p
-                    className={`mt-1 text-xs ${
+                    className={`stamp-status ${
                       collectedStamps.includes(spot.id)
-                        ? "font-bold text-emerald-500"
-                        : "text-slate-400"
+                        ? "text-emerald font-bold"
+                        : "text-dim"
                     }`}
                   >
                     {collectedStamps.includes(spot.id) ? "獲得済み" : "未獲得"}
@@ -642,47 +531,32 @@ export default function StartScreen() {
 
       {/* 駐車場一覧モーダル */}
       {showParkings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-5">
-          <div className="max-h-[75vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/85 p-5 shadow-2xl backdrop-blur-md">
-            {/* タイトル */}
-            <div className="mb-5 flex items-center justify-between">
+        <div className="modal-overlay">
+          <div className="modal-dialog">
+            <div className="flex-between mb-5">
               <div>
-                <h2 className="text-xl font-bold text-slate-800">
-                  駐車場一覧
-                </h2>
-                <p className="mt-1 text-xs text-slate-500">
-                  長崎市内の駐車場情報
-                </p>
+                <h2 className="modal-title">駐車場一覧</h2>
+                <p className="modal-subtitle">長崎市内の駐車場情報</p>
               </div>
-
               <button
                 type="button"
                 onClick={() => setShowParkings(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-xl text-slate-600"
+                className="circle-btn size-9"
               >
                 ×
               </button>
             </div>
 
-            {/* 駐車場一覧 */}
-            <div className="space-y-3">
+            <div>
               {parkings.map((parking) => (
-                <div
-                  key={parking.id}
-                  className="rounded-2xl bg-white/70 p-4"
-                >
-                  <div className="flex items-start gap-3">
-                    {/* Pアイコン */}
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 font-bold text-blue-600">
-                      P
-                    </div>
+                <div key={parking.id} className="list-item-card">
+                  <div className="flex-start-gap">
+                    <div className="badge-p large">P</div>
 
                     <div className="w-full">
-                      <h3 className="font-bold text-slate-800">
-                        {parking.name}
-                      </h3>
+                      <h3 className="spot-name-header">{parking.name}</h3>
 
-                      <div className="mt-3 space-y-1 text-sm text-slate-600">
+                      <div className="parking-meta-text">
                         <p>💴 {parking.price}</p>
                         <p>🚗 {parking.capacity}台</p>
                         {parking.twentyfour_h && <p>🕐 {parking.twentyfour_h}</p>}
@@ -694,7 +568,7 @@ export default function StartScreen() {
                           href={parking.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-3 inline-block text-sm font-semibold text-blue-500 hover:text-blue-600"
+                          className="parking-detail-link"
                         >
                           詳細を見る →
                         </a>
@@ -708,45 +582,36 @@ export default function StartScreen() {
         </div>
       )}
 
-      {/* サイドメニュー */}
+      {/* サイドドロワーメニュー */}
       {showMenu && (
-        <div className="fixed inset-0 z-50 bg-black/30">
-          {/* メニュー本体 */}
-          <div className="h-full w-[80%] max-w-xs bg-white/90 p-6 shadow-2xl backdrop-blur-xl flex flex-col">
-            {/* 上部 */}
-            <div className="mb-8 flex items-center justify-between">
+        <div className="drawer-backdrop">
+          <div className="drawer-panel">
+            <div className="flex-between mb-8">
               <div>
-                <p className={`${caveat.className} text-3xl text-blue-600`}>
+                <p className={`${caveat.className} drawer-title`}>
                   Nagasaki Navi
                 </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  MENU
-                </p>
+                <p className="mt-1 font-xs text-dim">MENU</p>
               </div>
 
               <button
                 type="button"
                 onClick={() => setShowMenu(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-600"
+                className="circle-btn size-9"
               >
                 ×
               </button>
             </div>
 
-            {/* メニュー項目 */}
-            <div className="space-y-2">
-              <Link
-                href={mapUrl}
-                className="flex items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-blue-50"
-              >
+            <div className="drawer-menu-list">
+              <Link href={mapUrl} className="drawer-link">
                 <span>🗺️</span>
                 地図を見る
               </Link>
 
-              {/* テストコース */}
               <Link
                 href="/?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
-                className="flex items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-pink-50"
+                className="drawer-link"
               >
                 <span>🚗</span>
                 初心者ドライブコース（長崎駅→眼鏡橋）
@@ -758,7 +623,7 @@ export default function StartScreen() {
                   setShowMenu(false);
                   setShowSpots(true);
                 }}
-                className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-pink-50"
+                className="drawer-link"
               >
                 <span>📌</span>
                 観光地一覧
@@ -770,7 +635,7 @@ export default function StartScreen() {
                   setShowMenu(false);
                   setShowParkings(true);
                 }}
-                className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-sky-50"
+                className="drawer-link"
               >
                 <span>🅿️</span>
                 駐車場一覧
@@ -782,20 +647,20 @@ export default function StartScreen() {
                   setShowMenu(false);
                   setShowStamps(true);
                 }}
-                className="flex w-full items-center gap-3 rounded-2xl px-4 py-4 font-semibold text-slate-700 transition hover:bg-emerald-50"
+                className="drawer-link"
               >
                 <span>🏷️</span>
                 スタンプ帳
               </button>
             </div>
 
-            <div className="mt-auto pt-4 border-t border-slate-200 text-xs text-slate-400">
+            <div className="drawer-footer">
               長崎を、もっと自由に、もっと快適に。
             </div>
           </div>
 
           <div
-            className="fixed inset-0 -z-10"
+            className="drawer-scrim"
             onClick={() => setShowMenu(false)}
           />
         </div>

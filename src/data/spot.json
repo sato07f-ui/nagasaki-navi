@@ -5,8 +5,7 @@
     "lat": 32.74145,
     "lng": 129.87527,
     "description": "日本三大中華街の一つ。ちゃんぽんや皿うどんなどのグルメが楽しめます。",
-    "osekkai_message": "中華街のすぐ横は一方通行ばっかりで渋滞しやすいけん、少し離れた湊公園周辺の駐車場から歩くのがよかよ！",
-    "recommended_parking_id": "minato_park_parking"
+    "osekkai_message": "中華街のすぐ横は一方通行ばっかりで渋滞しやすいけん、少し離れた湊公園周辺の駐車場から歩くのがよかよ！"
   },
   {
     "id": "glover",
@@ -14,8 +13,7 @@
     "lat": 32.7333,
     "lng": 129.8694,
     "description": "長崎の代表的観光地。美しい洋館と長崎港の景色が見どころです。",
-    "osekkai_message": "横の坂道は大型車や慣れとらん人には危ないけん、下の松が枝町駐車場に停めてグラバースカイロード（斜行エレベーター）で登りなさい！",
-    "recommended_parking_id": "matsugae_parking"
+    "osekkai_message": "横の坂道は大型車や慣れとらん人には危ないけん、下の松が枝町駐車場に停めてグラバースカイロード（斜行エレベーター）で登りなさい！"
   },
   {
     "id": "dejima",
@@ -23,8 +21,7 @@
     "lat": 32.7431,
     "lng": 129.8732,
     "description": "江戸時代のオランダ商館跡。当時の街並みが復元されています。",
-    "osekkai_message": "周辺の駐車場はすぐ満車になるけん、県庁跡地側の駐車場か、少し歩くけど水辺の森公園近くに停めるとスムーズばい！",
-    "recommended_parking_id": "dejima_area_parking"
+    "osekkai_message": "周辺の駐車場はすぐ満車になるけん、県庁跡地側の駐車場か、少し歩くけど水辺の森公園近くに停めるとスムーズばい！"
   },
   {
     "id": "meganebashi",
@@ -32,8 +29,7 @@
     "lat": 32.7472,
     "lng": 129.88,
     "description": "中島川に架かる日本最古のアーチ型石橋。川沿いの散策が人気です。",
-    "osekkai_message": "川沿いの道はよか雰囲気やけど、道が狭くて観光客も多かけん運転には気をつけてね！近くの市民会館地下駐車場が広くて停めやすかよ。",
-    "recommended_parking_id": "shiminkaikan_parking"
+    "osekkai_message": "川沿いの道はよか雰囲気やけど、道が狭くて観光客も多かけん運転には気をつけてね！近くの市民会館地下駐車場が広くて停めやすかよ。"
   },
   {
     "id": "inasayama",
@@ -41,8 +37,7 @@
     "lat": 32.7526,
     "lng": 129.8495,
     "description": "長崎市の夜景を一望できる展望台。世界新三大夜景の一つです。",
-    "osekkai_message": "夜の山頂駐車場はすごく混むし、道も暗くて細いけん、中腹の駐車場に停めてスロープカーで登るのが一番安心ばい！",
-    "recommended_parking_id": "inasayama_mid_parking"
+    "osekkai_message": "夜の山頂駐車場はすごく混むし、道も暗くて細いけん、中腹の駐車場に停めてスロープカーで登るのが一番安心ばい！"
   },
   {
     "id": "oura_church",
@@ -50,8 +45,7 @@
     "lat": 32.7341,
     "lng": 129.8703,
     "description": "国宝に指定されている日本最古の木造ゴシック様式の教会。",
-    "osekkai_message": "グラバー園のすぐ近くやけん、同じ松が枝駐車場が便利！前の坂道（グラバー通り）は歩行者が多かけん、車で入らんようにね。",
-    "recommended_parking_id": "matsugae_parking"
+    "osekkai_message": "グラバー園のすぐ近くやけん、同じ松が枝駐車場が便利！前の坂道（グラバー通り）は歩行者が多かけん、車で入らんようにね。"
   },
   {
     "id": "peace_park",
@@ -59,8 +53,7 @@
     "lat": 32.7764,
     "lng": 129.86363,
     "description": "悲惨な戦争を二度と繰り返さないという誓いと、世界平和への願いを込めて作られた公園。",
-    "osekkai_message": "近くの松山町駐車場が広くて停めやすかよ！休日は修学旅行のバスも多かけん、入り口周辺は気をつけて運転してね。",
-    "recommended_parking_id": "matsuyama_parking"
+    "osekkai_message": "近くの松山町駐車場が広くて停めやすかよ！休日は修学旅行のバスも多かけん、入り口周辺は気をつけて運転してね。"
   },
   {
     "id": "nagasaki_station",
@@ -68,8 +61,7 @@
     "lat": 32.7523,
     "lng": 129.8706,
     "description": "アミュプラザ長崎など、ショッピングや食事が楽しめる複合商業施設。",
-    "osekkai_message": "駅直結の駐車場は便利やけど、土日祝日は入るのに列ができるけん、急ぐなら少し離れたコインパーキングも候補に入れてね。",
-    "recommended_parking_id": "amu_plaza_parking"
+    "osekkai_message": "駅直結の駐車場は便利やけど、土日祝日は入るのに列ができるけん、急ぐなら少し離れたコインパーキングも候補に入れてね。"
   },
   {
     "id": "abomb_museum",
@@ -77,8 +69,7 @@
     "lat": 32.7725,
     "lng": 129.8647,
     "description": "被爆の惨状や原爆投下から現在までの長崎の復興の歩みを展示しています。",
-    "osekkai_message": "平和公園から歩いていける距離やけん、車は松山町駐車場に停めたまま、ゆっくり歩いて見学して回るのがおすすめばい！",
-    "recommended_parking_id": "matsuyama_parking"
+    "osekkai_message": "平和公園から歩いていける距離やけん、車は松山町駐車場に停めたまま、ゆっくり歩いて見学して回るのがおすすめばい！"
   },
   {
     "id": "urakami_cathedral",
@@ -86,8 +77,7 @@
     "lat": 32.7761,
     "lng": 129.8685,
     "description": "被爆したマリア像が残る、赤レンガ造りの美しいカトリック教会。",
-    "osekkai_message": "周辺の住宅街は一方通行や細い道が多かけん、ナビに頼りすぎず標識をよく見て気をつけて運転してね！",
-    "recommended_parking_id": "urakami_parking"
+    "osekkai_message": "周辺の住宅街は一方通行や細い道が多かけん、ナビに頼りすぎず標識をよく見て気をつけて運転してね！"
   },
   {
     "id": "hamanomachi",
@@ -96,6 +86,6 @@
     "lng": 129.8788,
     "description": "長崎市最大の繁華街。ご当地グルメやお土産探しに最適です。",
     "osekkai_message": "長崎一の繁華街やけん、周辺の駐車場はすぐ埋まるよ！少し離れた銅座町あたりに停めて歩くか、路面電車で来るのがよかよ。",
-    "recommended_parking_id": "douza_parking"
+    "train_id": "fifth"
   }
 ]
