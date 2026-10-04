@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import spotsData from "../../data/spot.json";
 import parkingData from "../../data/parking.json";
-import { getSpotById, getParkingForSpot } from "../../utils/parkingService";
+import { getParkingForSpot } from "../../utils/parkingService";
 import type { MapComponentProps } from "../MapComponent";
 
 const Map = dynamic<MapComponentProps>(() => import("../MapComponent"), {
@@ -63,15 +63,14 @@ function HomeContent() {
   const [isRecommendedOpen, setIsRecommendedOpen] = useState(false);
   const [isParkingModalOpen, setIsParkingModalOpen] = useState(false);
 
-  useEffect(() => {
+  const [prevInitialSpotId, setPrevInitialSpotId] = useState(initialSpotId);
+  if (initialSpotId !== prevInitialSpotId) {
+    setPrevInitialSpotId(initialSpotId);
     setSelectedSpotId(initialSpotId);
     if (initialSpotId === "meganebashi") {
       setActiveCategory("test-course");
     }
-  }, [initialSpotId]);
-
-  const selectedSpot = selectedSpotId ? getSpotById(selectedSpotId) : undefined;
-  const targetParking = selectedSpotId ? getParkingForSpot(selectedSpotId) : undefined;
+  }
 
   // 目的地を設定
   const handleSelectSpot = (spotId: string) => {

@@ -11,6 +11,7 @@ import {
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "./MapComponent.css";
 
 import intersections from "../data/intersection.json";
 import parkingData from "../data/parking.json";
@@ -61,23 +62,7 @@ const defaultSpotIcon = L.icon({
 // 出発地ピン（青バッジ）
 const startMarkerIcon = L.divIcon({
   className: "custom-start-marker",
-  html: `
-    <div style="
-      background-color: #2563eb;
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 4px 10px rgba(37,99,235,0.4);
-      border: 3px solid white;
-    ">
-      📍
-    </div>
-  `,
+  html: `<div class="map-marker-pin map-marker-start">📍</div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
   popupAnchor: [0, -18],
@@ -86,23 +71,7 @@ const startMarkerIcon = L.divIcon({
 // 目的地駐車場ピン（目立つ赤色バッジ）
 const destinationParkingIcon = L.divIcon({
   className: "custom-dest-marker",
-  html: `
-    <div style="
-      background-color: #dc2626;
-      color: white;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 4px 14px rgba(220,38,38,0.5);
-      border: 3px solid white;
-    ">
-      🏁
-    </div>
-  `,
+  html: `<div class="map-marker-pin map-marker-destination">🏁</div>`,
   iconSize: [42, 42],
   iconAnchor: [21, 21],
   popupAnchor: [0, -21],
@@ -111,23 +80,7 @@ const destinationParkingIcon = L.divIcon({
 // 選択された観光地用アイコン（星バッジ）
 const spotStarIcon = L.divIcon({
   className: "custom-spot-star",
-  html: `
-    <div style="
-      background-color: #f59e0b;
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 10px rgba(245,158,11,0.5);
-      border: 3px solid white;
-    ">
-      ⭐
-    </div>
-  `,
+  html: `<div class="map-marker-pin map-marker-spot">⭐</div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
   popupAnchor: [0, -18],
@@ -276,15 +229,15 @@ export default function MapComponent({
   }, [startPosition, goalPosition]);
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="map-wrapper">
       {/* スマホ最適化: 画面下部に配置するルート案内・目的地カード（上部メニューとの被りを解消） */}
       {spotId && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-1.5rem)] max-w-md pointer-events-auto">
+        <div className="map-bottom-overlay">
           {/* ① ローディング表示 */}
           {isLoading && (
-            <div className="flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-3.5 shadow-2xl backdrop-blur-md border border-blue-200 text-blue-900 animate-pulse">
+            <div className="map-glass-card map-loading-card">
               <svg
-                className="animate-spin h-5 w-5 text-blue-600 shrink-0"
+                className="map-loading-spinner"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -303,7 +256,7 @@ export default function MapComponent({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <div className="text-xs sm:text-sm font-semibold">
+              <div className="map-loading-text">
                 {selectedSpot
                   ? `「${selectedSpot.name}」へのおすすめ駐車場ルートを探索中...`
                   : "初心者向け大通りルートを探索中..."}
@@ -313,18 +266,18 @@ export default function MapComponent({
 
           {/* ② エラー時の警告表示 & 再試行ボタン */}
           {!isLoading && errorMessage && (
-            <div className="flex items-start justify-between gap-3 rounded-2xl bg-red-50/95 px-4 py-3.5 shadow-2xl backdrop-blur-md border border-red-200 text-red-900">
-              <div className="flex items-start gap-2">
-                <span className="text-lg leading-none">⚠️</span>
+            <div className="map-glass-card map-error-card">
+              <div className="map-error-content">
+                <span className="map-error-icon">⚠️</span>
                 <div>
-                  <p className="text-sm font-bold">ルート探索に失敗しました</p>
-                  <p className="text-xs text-red-600 mt-0.5">{errorMessage}</p>
+                  <p className="map-error-title">ルート探索に失敗しました</p>
+                  <p className="map-error-msg">{errorMessage}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={loadRoute}
-                className="shrink-0 bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-xl transition-colors font-bold shadow-sm"
+                className="map-retry-btn"
               >
                 再試行
               </button>
@@ -333,19 +286,19 @@ export default function MapComponent({
 
           {/* ③ ルート取得完了時の案内カード */}
           {!isLoading && !errorMessage && selectedSpot && (
-            <div className="rounded-3xl bg-white/95 p-4 shadow-2xl backdrop-blur-md border border-slate-200/90 text-slate-800 transition">
+            <div className="map-glass-card map-info-card">
               {/* カードヘッダー */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2">
+              <div className="map-card-header">
+                <div className="map-card-header-left">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-base">
                     🎯
                   </span>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-base leading-tight">
+                    <h3 className="map-spot-title">
                       {selectedSpot.name}
                     </h3>
                     {targetParking && (
-                      <p className="text-xs font-semibold text-blue-600 mt-0.5">
+                      <p className="map-spot-parking-sub">
                         🅿️ 案内先: {targetParking.name}
                       </p>
                     )}
@@ -356,7 +309,7 @@ export default function MapComponent({
                   <button
                     type="button"
                     onClick={onClearSpot}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 text-sm font-bold transition shrink-0"
+                    className="map-close-btn"
                     title="ルート案内を解除"
                     aria-label="ルート解除"
                   >
@@ -369,12 +322,12 @@ export default function MapComponent({
               {targetParking && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
                   {targetParking.price && (
-                    <span className="rounded-lg bg-slate-100 px-2 py-0.5 font-medium">
+                    <span className="map-tag-chip">
                       💴 {targetParking.price}
                     </span>
                   )}
                   {targetParking.capacity && (
-                    <span className="rounded-lg bg-slate-100 px-2 py-0.5 font-medium">
+                    <span className="map-tag-chip">
                       🚗 {targetParking.capacity}台
                     </span>
                   )}
@@ -383,7 +336,7 @@ export default function MapComponent({
                       href={targetParking.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-lg bg-blue-50 px-2 py-0.5 font-bold text-blue-600 hover:underline"
+                      className="map-tag-chip link"
                     >
                       詳細 ↗
                     </a>
@@ -393,17 +346,17 @@ export default function MapComponent({
 
               {/* 長崎ローカルおせっかいアドバイス */}
               {selectedSpot.osekkai_message && (
-                <div className="mt-2.5 rounded-2xl bg-amber-50/90 p-2.5 text-xs text-amber-900 border border-amber-200/80 leading-relaxed font-medium">
+                <div className="map-osekkai-box">
                   💡 {selectedSpot.osekkai_message}
                 </div>
               )}
 
               {/* フッター: ルート情報 */}
-              <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span className="flex items-center gap-1 font-semibold text-emerald-600">
+              <div className="map-card-footer">
+                <span className="map-footer-status">
                   <span>🛣️</span> {routeMessage || "大通り優先ルートを案内中"}
                 </span>
-                <span className="text-[10px] text-slate-400">初心者安心</span>
+                <span className="map-footer-note">初心者安心</span>
               </div>
             </div>
           )}
@@ -414,7 +367,7 @@ export default function MapComponent({
         center={startPosition}
         zoom={13}
         zoomControl={false}
-        style={{ height: "100%", width: "100%" }}
+        className="map-container-root"
       >
         <MapViewUpdater
           start={startPosition}
@@ -433,17 +386,11 @@ export default function MapComponent({
         {(spotId || isCustomStart) && (
           <Marker position={startPosition} icon={startMarkerIcon}>
             <Popup>
-              <div style={{ minWidth: "150px" }}>
-                <strong style={{ color: "#2563eb", fontSize: "14px" }}>
+              <div className="map-popup-card">
+                <strong className="map-popup-title blue">
                   📍 出発地 {isCustomStart ? "（現在地）" : "（長崎駅）"}
                 </strong>
-                <p
-                  style={{
-                    margin: "4px 0 0",
-                    fontSize: "11px",
-                    color: "#6b7280",
-                  }}
-                >
+                <p className="map-popup-meta">
                   座標: {startPosition[0].toFixed(4)},{" "}
                   {startPosition[1].toFixed(4)}
                 </p>
@@ -456,60 +403,30 @@ export default function MapComponent({
         {goalPosition && targetParking && (
           <Marker position={goalPosition} icon={destinationParkingIcon}>
             <Popup>
-              <div style={{ minWidth: "180px" }}>
-                <div
-                  style={{
-                    display: "inline-block",
-                    background: "#fee2e2",
-                    color: "#b91c1c",
-                    padding: "2px 6px",
-                    borderRadius: "4px",
-                    fontSize: "10px",
-                    fontWeight: "bold",
-                    marginBottom: "4px",
-                  }}
-                >
+              <div className="map-popup-card wide">
+                <div className="map-popup-badge-dest">
                   🏁 目的地駐車場
                 </div>
-                <strong
-                  style={{
-                    display: "block",
-                    color: "#dc2626",
-                    fontSize: "15px",
-                  }}
-                >
+                <strong className="map-popup-title large red">
                   {targetParking.name}
                 </strong>
                 {selectedSpot && (
                   <p
-                    style={{
-                      margin: "4px 0 0",
-                      fontSize: "12px",
-                      color: "#1d4ed8",
-                      fontWeight: "600",
-                    }}
+                    className="map-popup-highlight"
                   >
                     🎯 「{selectedSpot.name}」におすすめの駐車場です
                   </p>
                 )}
                 {targetParking.price && (
                   <p
-                    style={{
-                      margin: "4px 0 0",
-                      fontSize: "11px",
-                      color: "#4b5563",
-                    }}
+                    className="map-popup-desc map-popup-subtle"
                   >
                     料金: {targetParking.price}
                   </p>
                 )}
                 {targetParking.capacity && (
                   <p
-                    style={{
-                      margin: "2px 0 0",
-                      fontSize: "11px",
-                      color: "#4b5563",
-                    }}
+                    className="map-popup-meta map-popup-subtle"
                   >
                     収容台数: {targetParking.capacity}台
                   </p>
@@ -553,17 +470,11 @@ export default function MapComponent({
             icon={dangerIcon}
           >
             <Popup>
-              <div style={{ minWidth: "150px" }}>
-                <strong style={{ color: "#d97706", fontSize: "14px" }}>
+              <div className="map-popup-card">
+                <strong className="map-popup-title warning">
                   ⚠️ {spot.name}
                 </strong>
-                <p
-                  style={{
-                    margin: "4px 0 0",
-                    fontSize: "12px",
-                    color: "#374151",
-                  }}
-                >
+                <p className="map-popup-desc">
                   {spot.description}
                 </p>
               </div>
@@ -583,8 +494,8 @@ export default function MapComponent({
               icon={defaultParkingIcon}
             >
               <Popup>
-                <div style={{ minWidth: "150px" }}>
-                  <strong style={{ color: "#2563eb", fontSize: "14px" }}>
+                <div className="map-popup-card">
+                  <strong className="map-popup-title blue">
                     {p.name}
                   </strong>
                   {p.description && (
@@ -600,22 +511,14 @@ export default function MapComponent({
                   )}
                   {p.price && (
                     <p
-                      style={{
-                        margin: "2px 0 0",
-                        fontSize: "11px",
-                        color: "#6b7280",
-                      }}
+                      className="map-popup-meta"
                     >
                       料金: {p.price}
                     </p>
                   )}
                   {p.capacity && (
                     <p
-                      style={{
-                        margin: "2px 0 0",
-                        fontSize: "11px",
-                        color: "#6b7280",
-                      }}
+                      className="map-popup-meta"
                     >
                       収容台数: {p.capacity}台
                     </p>
@@ -653,39 +556,20 @@ export default function MapComponent({
               icon={isSelected ? spotStarIcon : defaultSpotIcon}
             >
               <Popup>
-                <div style={{ minWidth: "180px", maxWidth: "250px" }}>
-                  <strong
-                    style={{
-                      color: "#1d4ed8",
-                      fontSize: "15px",
-                      display: "block",
-                    }}
-                  >
+                <div className="map-popup-card wide">
+                  <strong className="map-popup-title large primary">
                     {isSelected ? `⭐ ${spot.name}（選択中）` : spot.name}
                   </strong>
 
                   <p
-                    style={{
-                      margin: "4px 0",
-                      fontSize: "12px",
-                      color: "#374151",
-                      lineHeight: "1.4",
-                    }}
+                    className="map-popup-desc"
                   >
                     {spot.description}
                   </p>
 
                   {spot.osekkai_message && (
                     <p
-                      style={{
-                        margin: "6px 0",
-                        fontSize: "11px",
-                        color: "#b45309",
-                        backgroundColor: "#fef3c7",
-                        padding: "5px 8px",
-                        borderRadius: "6px",
-                        lineHeight: "1.4",
-                      }}
+                      className="map-popup-banner map-popup-banner-amber"
                     >
                       💡 {spot.osekkai_message}
                     </p>
@@ -694,15 +578,7 @@ export default function MapComponent({
                   {/* 紐づく駐車場の事前案内 */}
                   {associatedParking && (
                     <div
-                      style={{
-                        margin: "6px 0",
-                        padding: "5px 8px",
-                        backgroundColor: "#eff6ff",
-                        borderRadius: "6px",
-                        fontSize: "11px",
-                        color: "#1e40af",
-                        border: "1px solid #bfdbfe",
-                      }}
+                      className="map-popup-banner map-popup-banner-blue"
                     >
                       🅿️ 案内先駐車場: <strong>{associatedParking.name}</strong>
                     </div>
@@ -716,23 +592,9 @@ export default function MapComponent({
                         onSelectSpot(spot.id);
                       }
                     }}
-                    style={{
-                      marginTop: "8px",
-                      width: "100%",
-                      padding: "8px 12px",
-                      backgroundColor: isSelected ? "#059669" : "#2563eb",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                      boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "4px",
-                    }}
+                    className={`map-popup-action-btn ${
+                      isSelected ? "selected" : "unselected"
+                    }`}
                   >
                     {isSelected ? "✓ 目的地に設定中" : "🎯 目的地に設定"}
                   </button>
