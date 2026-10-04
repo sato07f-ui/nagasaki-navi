@@ -285,7 +285,11 @@ if (nearbySpots.length > 0) {
           {/* ルート検索 */}
 <Link
   href="/"
-  className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-500 py-4 font-bold text-white shadow-md transition hover:bg-blue-600 active:scale-[0.98]"
+  className={`mt-5 flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold shadow-md transition ${
+    latitude !== null && longitude !== null && destination
+      ? "bg-blue-500 text-white hover:bg-blue-600 active:scale-[0.98]"
+      : "pointer-events-none bg-slate-300 text-slate-500 shadow-none"
+  }`}
 >
   <svg
     viewBox="0 0 24 24"
