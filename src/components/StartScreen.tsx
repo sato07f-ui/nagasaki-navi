@@ -44,8 +44,8 @@ export default function StartScreen() {
   // 地図画面へ遷移するURL
   const mapUrl =
     latitude !== null && longitude !== null
-      ? `/?startLat=${latitude}&startLng=${longitude}`
-      : "/";
+      ? `/map?startLat=${latitude}&startLng=${longitude}`
+      : "/map";
 
   // 2点間の距離計算（m）
   const getDistance = (
@@ -151,7 +151,7 @@ export default function StartScreen() {
     const startLat = latitude ?? DEFAULT_START.lat;
     const startLng = longitude ?? DEFAULT_START.lng;
 
-    router.push(`/?startLat=${startLat}&startLng=${startLng}&spotId=${destination}`);
+    router.push(`/map?startLat=${startLat}&startLng=${startLng}&spotId=${destination}`);
   };
 
   return (
@@ -610,7 +610,7 @@ export default function StartScreen() {
               </Link>
 
               <Link
-                href="/?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
+                href="/map?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
                 className="drawer-link"
               >
                 <span>🚗</span>
