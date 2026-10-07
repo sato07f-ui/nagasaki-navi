@@ -16,6 +16,9 @@
   <img src="https://img.shields.io/badge/-TypeScript-007ACC.svg?logo=typescript&style=for-the-badge&logoColor=FFFFFF">
   <img src="https://img.shields.io/badge/-TailwindCSS-000000.svg?logo=tailwindcss&style=for-the-badge">
   <img src="https://img.shields.io/badge/-React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB">
+  <img src="https://img.shields.io/badge/-Leaflet-199900.svg?logo=leaflet&style=for-the-badge&logoColor=FFFFFF">
+  <img src="https://img.shields.io/badge/-OpenStreetMap-7EBC6F.svg?logo=openstreetmap&style=for-the-badge&logoColor=FFFFFF">
+  <img src="https://img.shields.io/badge/-OpenRouteService-000000.svg?style=for-the-badge">
   
 </p>
 
