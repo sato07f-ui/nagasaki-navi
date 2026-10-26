@@ -5,6 +5,7 @@ import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import spotsData from "../../data/spot.json";
+import { ParkInfo } from "../../components/ParkInfo";
 import { getParkingForSpot } from "../../utils/parkingService";
 import type { MapComponentProps } from "../MapComponent";
 
@@ -60,6 +61,7 @@ function HomeContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isStampModalOpen, setIsStampModalOpen] = useState(false);
   const [isRecommendedOpen, setIsRecommendedOpen] = useState(false);
+  const [isParkingModalOpen, setIsParkingModalOpen] = useState(false);
 
   const [prevInitialSpotId, setPrevInitialSpotId] = useState(initialSpotId);
   if (initialSpotId !== prevInitialSpotId) {
@@ -84,6 +86,7 @@ function HomeContent() {
     // モーダル類を閉じる
     setIsRecommendedOpen(false);
     setIsStampModalOpen(false);
+    setIsParkingModalOpen(false);
     setIsMenuOpen(false);
   };
 
@@ -112,6 +115,7 @@ function HomeContent() {
   const handleRecommendedClick = () => {
     setIsRecommendedOpen((prev) => !prev);
     setIsStampModalOpen(false);
+    setIsParkingModalOpen(false);
     setActiveCategory((prev) => (prev === "recommended" ? null : "recommended"));
   };
 
@@ -119,7 +123,15 @@ function HomeContent() {
   const handleStampClick = () => {
     setIsStampModalOpen((prev) => !prev);
     setIsRecommendedOpen(false);
+    setIsParkingModalOpen(false);
     setActiveCategory((prev) => (prev === "stamp" ? null : "stamp"));
+  };
+
+  const handleParkingClick = () => {
+    setIsParkingModalOpen((prev) => !prev);
+    setIsRecommendedOpen(false);
+    setIsStampModalOpen(false);
+    setActiveCategory((prev) => (prev === "parking" ? null : "parking"));
   };
 
   return (
@@ -184,6 +196,18 @@ function HomeContent() {
               }`}
             >
               💮 スタンプ
+            </button>
+
+            <button
+              type="button"
+              onClick={handleParkingClick}
+              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
+                isParkingModalOpen
+                  ? "bg-sky-600 text-white border-sky-600 font-bold"
+                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
+              }`}
+            >
+              🅿️ 駐車場
             </button>
 
           </div>
@@ -314,7 +338,9 @@ function HomeContent() {
         </div>
       )}
 
-      {/* ④ 「☰」サイドメニュー・ドロワー */}
+      <ParkInfo isOpen={isParkingModalOpen} onClose={() => setIsParkingModalOpen(false)} />
+
+            {/* ④ 「☰」サイドメニュー・ドロワー */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[10000] flex bg-black/40 backdrop-blur-sm pointer-events-auto">
           <div className="w-72 max-w-[80%] h-full bg-white shadow-2xl flex flex-col p-5">

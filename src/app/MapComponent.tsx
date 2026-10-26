@@ -353,12 +353,12 @@ export default function MapComponent({
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
                   {targetParking.price && (
                     <span className="map-tag-chip">
-                      💴 {targetParking.price}
+                      料金: {targetParking.price}円
                     </span>
                   )}
                   {targetParking.capacity && (
                     <span className="map-tag-chip">
-                      🚗 {targetParking.capacity}台
+                      収容台数: {targetParking.capacity}台
                     </span>
                   )}
                   {targetParking.url && (
