@@ -168,14 +168,6 @@ export default function StartScreen() {
             ☰
           </button>
 
-          <button
-            type="button"
-            onClick={() => setShowParkings(true)}
-            className="header-parking-btn"
-          >
-            <span className="badge-p">P</span>
-            駐車場を探す
-          </button>
         </div>
 
         {/* ヒーロータイトル */}
@@ -536,7 +528,8 @@ export default function StartScreen() {
             <div className="flex-between mb-5">
               <div>
                 <h2 className="modal-title">駐車場一覧</h2>
-                <p className="modal-subtitle">長崎市内の駐車場情報</p>
+                <p className="modal-subtitle">長崎市内の駐車場情報</p> 
+                <p className="modal-subtitle">※料金は3時間利用時のものです。詳細はリンク先からご確認ください。</p>
               </div>
               <button
                 type="button"
@@ -555,12 +548,21 @@ export default function StartScreen() {
 
                     <div className="w-full">
                       <h3 className="spot-name-header">{parking.name}</h3>
+                      {parking.spot_key && parking.spot_key.length > 0 && (
+                        <p className="parking-nearby-spots">
+                          近隣観光地:{" "}
+                          {parking.spot_key
+                            .map((key) => spots.find((spot) => spot.id === key)?.name)
+                            .filter(Boolean)
+                            .join("、")}
+  </p>
+)}
 
                       <div className="parking-meta-text">
-                        <p>💴 {parking.price}</p>
-                        <p>🚗 {parking.capacity}台</p>
-                        {parking.twentyfour_h && <p>🕐 {parking.twentyfour_h}</p>}
-                        {parking.three_dim && <p>🏢 立体駐車場：{parking.three_dim}</p>}
+                        <p>料金: {parking.price}</p>
+                        <p>収容台数: {parking.capacity}台</p>
+                        <p>24H: {parking.twentyfour_h}</p>
+                        <p>立体駐車場: {parking.three_dim}</p>
                       </div>
 
                       {parking.url && (

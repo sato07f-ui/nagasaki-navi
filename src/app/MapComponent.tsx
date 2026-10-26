@@ -582,6 +582,20 @@ export default function MapComponent({
                       収容台数: {p.capacity}台
                     </p>
                   )}
+                  {p.twentyfour_h && (
+                    <p
+                      className="map-popup-meta"
+                    >
+                      24H: {p.twentyfour_h}
+                    </p>
+                  )}
+                  {p.three_dim && (
+                    <p
+                      className="map-popup-meta"
+                    >
+                      立体駐車場: {p.three_dim}
+                    </p>
+                  )}
                   {p.url && (
                     <p style={{ margin: "2px 0 0", fontSize: "11px" }}>
                       <a

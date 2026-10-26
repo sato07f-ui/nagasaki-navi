@@ -5,7 +5,6 @@ import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import spotsData from "../../data/spot.json";
-import parkingData from "../../data/parking.json";
 import { getParkingForSpot } from "../../utils/parkingService";
 import type { MapComponentProps } from "../MapComponent";
 
@@ -61,7 +60,6 @@ function HomeContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isStampModalOpen, setIsStampModalOpen] = useState(false);
   const [isRecommendedOpen, setIsRecommendedOpen] = useState(false);
-  const [isParkingModalOpen, setIsParkingModalOpen] = useState(false);
 
   const [prevInitialSpotId, setPrevInitialSpotId] = useState(initialSpotId);
   if (initialSpotId !== prevInitialSpotId) {
@@ -86,7 +84,6 @@ function HomeContent() {
     // モーダル類を閉じる
     setIsRecommendedOpen(false);
     setIsStampModalOpen(false);
-    setIsParkingModalOpen(false);
     setIsMenuOpen(false);
   };
 
@@ -115,7 +112,6 @@ function HomeContent() {
   const handleRecommendedClick = () => {
     setIsRecommendedOpen((prev) => !prev);
     setIsStampModalOpen(false);
-    setIsParkingModalOpen(false);
     setActiveCategory((prev) => (prev === "recommended" ? null : "recommended"));
   };
 
@@ -123,16 +119,7 @@ function HomeContent() {
   const handleStampClick = () => {
     setIsStampModalOpen((prev) => !prev);
     setIsRecommendedOpen(false);
-    setIsParkingModalOpen(false);
     setActiveCategory((prev) => (prev === "stamp" ? null : "stamp"));
-  };
-
-  // ④ 「駐車場」ボタン
-  const handleParkingClick = () => {
-    setIsParkingModalOpen((prev) => !prev);
-    setIsRecommendedOpen(false);
-    setIsStampModalOpen(false);
-    setActiveCategory((prev) => (prev === "parking" ? null : "parking"));
   };
 
   return (
@@ -199,18 +186,6 @@ function HomeContent() {
               💮 スタンプ
             </button>
 
-            {/* 駐車場 */}
-            <button
-              type="button"
-              onClick={handleParkingClick}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
-                isParkingModalOpen
-                  ? "bg-sky-600 text-white border-sky-600 font-bold"
-                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
-              }`}
-            >
-              🅿️ 駐車場
-            </button>
           </div>
         </div>
       </div>
@@ -334,60 +309,6 @@ function HomeContent() {
               >
                 閉じる
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ③ 駐車場一覧モーダル / ボトムシート */}
-      {isParkingModalOpen && (
-        <div
-          className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto"
-          onClick={() => setIsParkingModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-3xl bg-white p-4 shadow-2xl border border-sky-200 max-h-[75vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-3 pb-2 border-b">
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-                <span>🅿️</span> 市内駐車場一覧（{parkingData.length}箇所）
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsParkingModalOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 text-sm font-bold"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 overflow-y-auto pr-1">
-              {parkingData.map((parking) => (
-                <div
-                  key={parking.id}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-sky-50/70 border border-sky-100"
-                >
-                  <div className="text-left flex-1 pr-2">
-                    <p className="text-sm font-bold text-slate-800">{parking.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      {parking.price || "料金情報あり"} / 収容 {parking.capacity || "-"}台
-                    </p>
-                    {parking.twentyfour_h && (
-                      <p className="text-[11px] text-slate-400">{parking.twentyfour_h}</p>
-                    )}
-                  </div>
-                  {parking.url && (
-                    <a
-                      href={parking.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-sky-600 underline font-semibold px-2 py-1 shrink-0"
-                    >
-                      詳細
-                    </a>
-                  )}
-                </div>
-              ))}
             </div>
           </div>
         </div>
