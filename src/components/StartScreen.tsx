@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Caveat, Zen_Maru_Gothic } from "next/font/google";
 import spots from "../data/spot.json";
-import parkings from "../data/parking.json";
+import { ParkInfo } from "./ParkInfo";
 import "./StartScreen.css";
 
 const caveat = Caveat({ 
@@ -168,14 +168,6 @@ export default function StartScreen() {
             ☰
           </button>
 
-          <button
-            type="button"
-            onClick={() => setShowParkings(true)}
-            className="header-parking-btn"
-          >
-            <span className="badge-p">P</span>
-            駐車場を探す
-          </button>
         </div>
 
         {/* ヒーロータイトル */}
@@ -529,58 +521,7 @@ export default function StartScreen() {
         </div>
       )}
 
-      {/* 駐車場一覧モーダル */}
-      {showParkings && (
-        <div className="modal-overlay">
-          <div className="modal-dialog">
-            <div className="flex-between mb-5">
-              <div>
-                <h2 className="modal-title">駐車場一覧</h2>
-                <p className="modal-subtitle">長崎市内の駐車場情報</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowParkings(false)}
-                className="circle-btn size-9"
-              >
-                ×
-              </button>
-            </div>
-
-            <div>
-              {parkings.map((parking) => (
-                <div key={parking.id} className="list-item-card">
-                  <div className="flex-start-gap">
-                    <div className="badge-p large">P</div>
-
-                    <div className="w-full">
-                      <h3 className="spot-name-header">{parking.name}</h3>
-
-                      <div className="parking-meta-text">
-                        <p>💴 {parking.price}</p>
-                        <p>🚗 {parking.capacity}台</p>
-                        {parking.twentyfour_h && <p>🕐 {parking.twentyfour_h}</p>}
-                        {parking.three_dim && <p>🏢 立体駐車場：{parking.three_dim}</p>}
-                      </div>
-
-                      {parking.url && (
-                        <a
-                          href={parking.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="parking-detail-link"
-                        >
-                          詳細を見る →
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <ParkInfo isOpen={showParkings} onClose={() => setShowParkings(false)} />
 
       {/* サイドドロワーメニュー */}
       {showMenu && (
