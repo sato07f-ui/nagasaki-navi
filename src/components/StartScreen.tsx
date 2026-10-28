@@ -550,14 +550,6 @@ export default function StartScreen() {
                 地図を見る
               </Link>
 
-              <Link
-                href="/map?startLat=32.752405&startLng=129.871058&spotId=meganebashi"
-                className="drawer-link"
-              >
-                <span>🚗</span>
-                初心者ドライブコース（長崎駅→眼鏡橋）
-              </Link>
-
               <button
                 type="button"
                 onClick={() => {
