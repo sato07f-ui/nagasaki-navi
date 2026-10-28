@@ -20,3 +20,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - 観光地・駐車場・注意交差点は DB を使わず `src/data/*.json` の静的データで管理している（MVP時点で観光地11件・駐車場10件・交差点3件）
 - ルート検索は外部API（OpenRouteService → OSRM → 直線の順にフォールバック）を `src/app/api/route/route.ts` 経由で呼ぶ。ORS の APIキーは環境変数 `ORS_API_KEY`（`.env.local`）
 - ユーザー向けの文言・コメント・コミットメッセージは日本語
+
+# ディレクトリ構成と配置ルール
+
+- `src/app/` … ページ（`page.tsx`）とAPIだけを置く。UI部品は置かない
+- `src/app/api/route/route.ts` … 外部ルートAPI（ORS / OSRM）を呼ぶのはここだけ。APIキーが漏れるので、クライアントから直接呼ばない
+- `src/components/` … UI部品。部品専用の CSS は同じ名前で横に置く（例：`MapComponent.tsx` と `MapComponent.css`）
+  - `MapComponent.tsx` は Leaflet を使うため SSR できない。読み込むときは `next/dynamic` の `ssr: false` を使う（`src/app/map/page.tsx` を参照）
+- `src/data/*.json` … 観光地（spot）、駐車場（parking）、注意交差点（intersection）のデータ。データを追加するときはここを編集する。駐車場は `spot_key` に観光地の `id` を入れて結びつける
+- `src/utils/` … UIを持たない処理。`RouteService.ts` は `/api/route` を呼び、`parkingService.ts` はJSONを検索する
+- `public/` … 画像・アイコン。使わなくなったファイルは削除する
+- import は既存のコードに合わせて相対パスで書く
