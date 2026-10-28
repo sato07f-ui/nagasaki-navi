@@ -7,9 +7,9 @@ import Link from "next/link";
 import spotsData from "../../data/spot.json";
 import { ParkInfo } from "../../components/ParkInfo";
 import { getParkingForSpot } from "../../utils/parkingService";
-import type { MapComponentProps } from "../MapComponent";
+import type { MapComponentProps } from "../../components/MapComponent";
 
-const Map = dynamic<MapComponentProps>(() => import("../MapComponent"), {
+const Map = dynamic<MapComponentProps>(() => import("../../components/MapComponent"), {
   ssr: false,
   loading: () => (
     <div className="flex h-screen w-full items-center justify-center bg-slate-100 text-slate-600 font-medium">
