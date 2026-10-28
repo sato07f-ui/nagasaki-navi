@@ -55,7 +55,6 @@ function HomeContent() {
   const startLng = startLngParam ? parseFloat(startLngParam) : undefined;
 
   const [selectedSpotId, setSelectedSpotId] = useState<string | undefined>(initialSpotId);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // モーダル・ドロワーの状態管理
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,9 +66,6 @@ function HomeContent() {
   if (initialSpotId !== prevInitialSpotId) {
     setPrevInitialSpotId(initialSpotId);
     setSelectedSpotId(initialSpotId);
-    if (initialSpotId === "meganebashi") {
-      setActiveCategory("test-course");
-    }
   }
 
   // 目的地を設定
@@ -93,7 +89,6 @@ function HomeContent() {
   // 目的地をクリア（観光地ピンのみの初期状態に戻す）
   const handleClearSpot = () => {
     setSelectedSpotId(undefined);
-    setActiveCategory(null);
     if (startLat !== undefined && startLng !== undefined) {
       router.replace(`/map?startLat=${startLat}&startLng=${startLng}`);
     } else {
@@ -101,37 +96,24 @@ function HomeContent() {
     }
   };
 
-  // ① 「テストコース」ボタン
-  const handleTestCourseClick = () => {
-    if (selectedSpotId === "meganebashi" && activeCategory === "test-course") {
-      handleClearSpot();
-    } else {
-      setActiveCategory("test-course");
-      handleSelectSpot("meganebashi"); // テストコース: 長崎駅→眼鏡橋
-    }
-  };
-
-  // ② 「おすすめ」ボタン
+  // ① 「おすすめ」ボタン
   const handleRecommendedClick = () => {
     setIsRecommendedOpen((prev) => !prev);
     setIsStampModalOpen(false);
     setIsParkingModalOpen(false);
-    setActiveCategory((prev) => (prev === "recommended" ? null : "recommended"));
   };
 
-  // ③ 「スタンプ」ボタン
+  // ② 「スタンプ」ボタン
   const handleStampClick = () => {
     setIsStampModalOpen((prev) => !prev);
     setIsRecommendedOpen(false);
     setIsParkingModalOpen(false);
-    setActiveCategory((prev) => (prev === "stamp" ? null : "stamp"));
   };
 
   const handleParkingClick = () => {
     setIsParkingModalOpen((prev) => !prev);
     setIsRecommendedOpen(false);
     setIsStampModalOpen(false);
-    setActiveCategory((prev) => (prev === "parking" ? null : "parking"));
   };
 
   return (
@@ -159,19 +141,6 @@ function HomeContent() {
 
           {/* カテゴリボタン群（横スクロール） */}
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 pr-2">
-            {/* テストコース */}
-            <button
-              type="button"
-              onClick={handleTestCourseClick}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold shadow-sm transition active:scale-95 border ${
-                activeCategory === "test-course" && selectedSpotId === "meganebashi"
-                  ? "bg-blue-600 text-white border-blue-600 font-bold"
-                  : "bg-white text-slate-700 border-slate-200/80 hover:bg-slate-50"
-              }`}
-            >
-              🚗 テストコース
-            </button>
-
             {/* おすすめ */}
             <button
               type="button"
@@ -364,19 +333,6 @@ function HomeContent() {
                 <span>🚀</span>
                 <span>出発地・目的地を検索</span>
               </Link>
-
-              {/* テストコース */}
-              <button
-                type="button"
-                onClick={() => {
-                  handleTestCourseClick();
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-3 p-3 rounded-2xl text-slate-700 font-medium text-sm hover:bg-slate-50 transition text-left"
-              >
-                <span>🚗</span>
-                <span>初心者ドライブコース（長崎駅→眼鏡橋）</span>
-              </button>
 
               {/* おすすめ観光地 */}
               <button
