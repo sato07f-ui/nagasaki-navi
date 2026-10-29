@@ -506,20 +506,36 @@ export default function MapComponent({
           />
         )}
 
-        {/* 駐車場から観光地までの徒歩ルート（紫の点線） */}
+        {/* 駐車場から観光地までの徒歩ルート（縁取り付き水色の点線） */}
         {walkingPositions.length > 0 && (
+        <>
+          {/* 縁取り */}
           <Polyline
             positions={walkingPositions}
             pathOptions={{
-              color: "#9333ea",
-              weight: 5,
-              opacity: 0.9,
+              color: "#4e1663",
+              weight: 7,
+              opacity: 1,
               dashArray: "2 10",
               lineCap: "round",
               lineJoin: "round",
             }}
           />
-        )}
+
+          {/* 内側の水色の点線 */}
+          <Polyline
+            positions={walkingPositions}
+            pathOptions={{
+              color: "#eb88fc",
+              weight: 3,
+              opacity: 1,
+              dashArray: "2 10",
+              lineCap: "round",
+              lineJoin: "round",
+            }}
+          />
+        </>
+      )}
 
         {/* 交差点の注意箇所マーカー */}
         {intersections.map((spot) => (
