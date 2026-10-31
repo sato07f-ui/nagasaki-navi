@@ -38,7 +38,7 @@
 .map-marker-destination {
   width: 42px;
   height: 42px;
-  background-color: #dc2626;
+  background-color: #f6b950;
   font-size: 22px;
   box-shadow: 0 4px 14px rgba(220, 38, 26, 0.5);
 }
@@ -46,7 +46,7 @@
 .map-marker-spot {
   width: 36px;
   height: 36px;
-  background-color: #f59e0b;
+  background-color: #f7c773;
   font-size: 20px;
   box-shadow: 0 4px 10px rgba(245, 158, 11, 0.5);
 }

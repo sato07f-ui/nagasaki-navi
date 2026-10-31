@@ -68,19 +68,19 @@ const startMarkerIcon = L.divIcon({
   popupAnchor: [0, -18],
 });
 
-// 目的地駐車場ピン（目立つ赤色バッジ）
+// 目的地駐車場ピン（車バッジ）
 const destinationParkingIcon = L.divIcon({
   className: "custom-dest-marker",
-  html: `<div class="map-marker-pin map-marker-destination">🏁</div>`,
+  html: `<div class="map-marker-pin map-marker-destination">🚗</div>`,
   iconSize: [42, 42],
   iconAnchor: [21, 21],
   popupAnchor: [0, -21],
 });
 
-// 選択された観光地用アイコン（星バッジ）
+// 選択された観光地用アイコン（三角旗バッジ）
 const spotStarIcon = L.divIcon({
   className: "custom-spot-star",
-  html: `<div class="map-marker-pin map-marker-spot">⭐</div>`,
+  html: `<div class="map-marker-pin map-marker-spot">🚩</div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 18],
   popupAnchor: [0, -18],
@@ -449,7 +449,7 @@ export default function MapComponent({
             <Popup>
               <div className="map-popup-card wide">
                 <div className="map-popup-badge-dest">
-                  🏁 目的地駐車場
+                  🚗 目的地駐車場
                 </div>
                 <strong className="map-popup-title large red">
                   {targetParking.name}
@@ -647,7 +647,7 @@ export default function MapComponent({
               <Popup>
                 <div className="map-popup-card wide">
                   <strong className="map-popup-title large primary">
-                    {isSelected ? `⭐ ${spot.name}（選択中）` : spot.name}
+                    {isSelected ? `🚩 ${spot.name}（選択中）` : spot.name}
                   </strong>
 
                   <p
