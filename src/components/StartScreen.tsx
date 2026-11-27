@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Caveat, Zen_Maru_Gothic } from "next/font/google";
 import spots from "../data/spot.json";
 import { ParkInfo } from "./ParkInfo";
+import { SpotInfo } from "./SpotInfo";
 import "./StartScreen.css";
 
 const caveat = Caveat({ 
@@ -410,47 +411,15 @@ export default function StartScreen() {
       </div>
 
       {/* 観光地一覧モーダル */}
-      {showSpots && (
-        <div className="modal-overlay">
-          <div className="modal-dialog">
-            <div className="flex-between mb-5">
-              <h2 className="modal-title">観光地一覧</h2>
-              <button
-                type="button"
-                onClick={() => setShowSpots(false)}
-                className="circle-btn size-9"
-              >
-                ×
-              </button>
-            </div>
-
-            <div>
-              {spots.map((spot) => (
-                <div
-                  key={spot.id}
-                  className="list-item-card clickable"
-                  onClick={() => {
-                    setDestination(spot.id);
-                    setShowSpots(false);
-                    if (errorMsg) setErrorMsg(null);
-                  }}
-                >
-                  <div className="flex-row-gap">
-                    <span className="text-pink">📌</span>
-                    <div className="flex-1">
-                      <div className="flex-between">
-                        <h3 className="spot-name-header">{spot.name}</h3>
-                        <span className="spot-select-text">選択 ➔</span>
-                      </div>
-                      <p className="spot-desc">{spot.description}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <SpotInfo
+        isOpen={showSpots}
+        onClose={() => setShowSpots(false)}
+        onSelectSpot={(spotId) => {
+          setDestination(spotId);
+          setShowSpots(false);
+          if (errorMsg) setErrorMsg(null);
+        }}
+      />
 
       {/* スタンプ帳モーダル */}
       {showStamps && (

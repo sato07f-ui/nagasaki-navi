@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import spotsData from "../../data/spot.json";
 import { ParkInfo } from "../../components/ParkInfo";
-import { getParkingForSpot } from "../../utils/parkingService";
+import { SpotInfo } from "../../components/SpotInfo";
 import type { MapComponentProps } from "../../components/MapComponent";
 
 const Map = dynamic<MapComponentProps>(() => import("../../components/MapComponent"), {
@@ -39,9 +39,6 @@ const Map = dynamic<MapComponentProps>(() => import("../../components/MapCompone
     </div>
   ),
 });
-
-// おすすめ観光地（厳選5スポット）
-const RECOMMENDED_SPOT_IDS = ["chinatown", "glover", "dejima", "meganebashi", "peace_park"];
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -183,67 +180,12 @@ function HomeContent() {
         </div>
       </div>
 
-      {/* ① おすすめ観光地モーダル / ボトムシート */}
-      {isRecommendedOpen && (
-        <div
-          className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4 pointer-events-auto"
-          onClick={() => setIsRecommendedOpen(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-3xl bg-white p-4 shadow-2xl border border-amber-200 max-h-[75vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-3 pb-2 border-b">
-              <h3 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-                <span>⭐</span> 長崎のおすすめ観光地
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsRecommendedOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:text-slate-700 text-sm font-bold"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 overflow-y-auto pr-1">
-              {spotsData
-                .filter((s) => RECOMMENDED_SPOT_IDS.includes(s.id))
-                .map((spot) => {
-                  const parking = getParkingForSpot(spot.id);
-                  const isSelected = selectedSpotId === spot.id;
-                  return (
-                    <div
-                      key={spot.id}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-amber-50/70 border border-amber-100 hover:bg-amber-100/70 transition"
-                    >
-                      <div className="text-left flex-1 pr-2">
-                        <p className="text-sm font-bold text-slate-800">{spot.name}</p>
-                        {parking && (
-                          <p className="text-xs text-blue-600 font-semibold mt-0.5">🅿️ {parking.name}</p>
-                        )}
-                        <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{spot.description}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleSelectSpot(spot.id);
-                          setIsRecommendedOpen(false);
-                        }}
-                        className={`text-xs px-3.5 py-2 rounded-xl font-bold shadow-sm transition shrink-0 ${
-                          isSelected
-                            ? "bg-emerald-600 text-white"
-                            : "bg-blue-600 text-white hover:bg-blue-700"
-                        }`}
-                      >
-                        {isSelected ? "設定中" : "ここへ行く"}
-                      </button>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ① おすすめ（観光地一覧）モーダル */}
+      <SpotInfo
+        isOpen={isRecommendedOpen}
+        onClose={() => setIsRecommendedOpen(false)}
+        onSelectSpot={handleSelectSpot}
+      />
 
       {/* ② スタンプ帳モーダル */}
       {isStampModalOpen && (

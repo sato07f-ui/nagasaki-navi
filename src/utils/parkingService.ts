@@ -18,11 +18,15 @@ export interface SpotItem {
   osekkai_message?: string;
   recommended_parking_id?: string;
   tram_guide?: TramGuide;
+  url?: string;
+  x?: string;
+  insta?: string;
 }
 
 export interface ParkingItem {
   id: string;
   name: string;
+  description?: string;
   lat: number;
   lng: number;
   price?: string;

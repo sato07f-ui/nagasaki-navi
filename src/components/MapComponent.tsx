@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -14,10 +14,13 @@ import "leaflet/dist/leaflet.css";
 import "./MapComponent.css";
 
 import intersections from "../data/intersection.json";
-import parkingData from "../data/parking.json";
-import spotsData from "../data/spot.json";
 import { fetchRoute, LatLngTuple } from "../utils/RouteService";
-import { getSpotById, getParkingForSpot } from "../utils/parkingService";
+import {
+  getAllParkings,
+  getAllSpots,
+  getSpotById,
+  getParkingForSpot,
+} from "../utils/parkingService";
 
 // Next.jsでLeafletのデフォルトマーカー画像が表示されない問題を解決
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
@@ -203,6 +206,61 @@ export default function MapComponent({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
 
+  // 案内カード（ボトムシート）の開閉。ルート表示直後は開いた状態
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(true);
+  // 別の観光地を選んだら、案内を見逃さないよう開いた状態に戻す
+  const [prevSpotId, setPrevSpotId] = useState(spotId);
+  if (spotId !== prevSpotId) {
+    setPrevSpotId(spotId);
+    setIsSheetOpen(true);
+  }
+
+  // 出発地またはゴールが変わったとき（解除時を含む）にルート表示状態をリセット
+  const currentGoalKey = goalPosition
+    ? `${startPosition[0]},${startPosition[1]}->${goalPosition[0]},${goalPosition[1]}`
+    : null;
+  const [prevGoalKey, setPrevGoalKey] = useState<string | null>(currentGoalKey);
+  if (currentGoalKey !== prevGoalKey) {
+    setPrevGoalKey(currentGoalKey);
+    setRoutePositions([]);
+    setWalkingPositions([]);
+    setErrorMessage(null);
+    setRouteMessage(null);
+    setIsLoading(Boolean(currentGoalKey));
+  }
+
+  // 持ち手のスワイプ判定（指を離したときの上下の移動量だけを見る）
+  const SWIPE_THRESHOLD = 30; // これ以上動いたらスワイプとみなす（px）
+  const dragStartY = useRef<number | null>(null);
+  const isSwiped = useRef<boolean>(false);
+
+  const handleSheetPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    dragStartY.current = e.clientY;
+    isSwiped.current = false;
+  };
+
+  const handleSheetPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragStartY.current === null) return;
+    const deltaY = e.clientY - dragStartY.current;
+    dragStartY.current = null;
+    if (deltaY > SWIPE_THRESHOLD) {
+      setIsSheetOpen(false); // 下にスワイプ → たたむ
+      isSwiped.current = true;
+    } else if (deltaY < -SWIPE_THRESHOLD) {
+      setIsSheetOpen(true); // 上にスワイプ → 開く
+      isSwiped.current = true;
+    }
+  };
+
+  // タップ（またはキーボード操作）で開閉を切り替える。スワイプ直後のクリックは無視する
+  const handleSheetClick = () => {
+    if (isSwiped.current) {
+      isSwiped.current = false;
+      return;
+    }
+    setIsSheetOpen((prev) => !prev);
+  };
+
   // 取得結果を state に反映
   const applyRoutes = ({ driving, walkingCoordinates }: Awaited<ReturnType<typeof fetchRoutes>>) => {
     if (driving.error) {
@@ -228,13 +286,8 @@ export default function MapComponent({
   };
 
   useEffect(() => {
-    // 目的地が選択されていない場合はルートをクリアして探索しない
+    // 目的地が選択されていない場合は探索しない
     if (!goalPosition) {
-      setRoutePositions([]);
-      setWalkingPositions([]);
-      setIsLoading(false);
-      setErrorMessage(null);
-      setRouteMessage(null);
       return;
     }
 
@@ -242,8 +295,6 @@ export default function MapComponent({
 
     async function execute() {
       if (!goalPosition) return;
-      setIsLoading(true);
-      setErrorMessage(null);
 
       const result = await fetchRoutes(startPosition, goalPosition, walkFrom, walkTo);
       if (ignore) return;
@@ -317,6 +368,21 @@ export default function MapComponent({
           {/* ③ ルート取得完了時の案内カード */}
           {!isLoading && !errorMessage && selectedSpot && (
             <div className="map-glass-card map-info-card">
+              {/* ボトムシートの持ち手（タップ・上下スワイプで開閉） */}
+              <button
+                type="button"
+                className="map-sheet-handle"
+                onPointerDown={handleSheetPointerDown}
+                onPointerUp={handleSheetPointerUp}
+                onPointerCancel={() => (dragStartY.current = null)}
+                onClick={handleSheetClick}
+                aria-expanded={isSheetOpen}
+                aria-label={isSheetOpen ? "案内カードをたたむ" : "案内カードを開く"}
+                title={isSheetOpen ? "たたむ" : "開く"}
+              >
+                <span className="map-sheet-handle-bar" />
+              </button>
+
               {/* カードヘッダー */}
               <div className="map-card-header">
                 <div className="map-card-header-left">
@@ -348,6 +414,9 @@ export default function MapComponent({
                 )}
               </div>
 
+              {/* ここから下は開いた状態のときだけ表示 */}
+              {isSheetOpen && (
+              <>
               {/* 駐車場メタ情報バッジ */}
               {targetParking && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
@@ -401,6 +470,8 @@ export default function MapComponent({
                 </span>
                 <span className="map-footer-note">初心者安心</span>
               </div>
+              </>
+              )}
             </div>
           )}
         </div>
@@ -558,7 +629,7 @@ export default function MapComponent({
         ))}
 
         {/* parking.json からその他の駐車場マーカーを描画（目的地選択時に周辺駐車場として表示） */}
-        {parkingData.map((p: any) => {
+        {getAllParkings().map((p) => {
           if (targetParking && p.id === targetParking.id) {
             return null;
           }
@@ -634,7 +705,7 @@ export default function MapComponent({
         })}
 
         {/* 観光地（spot.json）のピンを描画 */}
-        {spotsData.map((spot) => {
+        {getAllSpots().map((spot) => {
           const isSelected = selectedSpot?.id === spot.id;
           const associatedParking = getParkingForSpot(spot.id);
 
@@ -646,6 +717,41 @@ export default function MapComponent({
             >
               <Popup>
                 <div className="map-popup-card wide">
+                  {(spot.url || spot.x || spot.insta) && (
+                    <div className="map-popup-top-links">
+                      {spot.url && (
+                        <a
+                          href={spot.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link detail"
+                        >
+                          詳細 <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                      {spot.x && (
+                        <a
+                          href={spot.x}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link x"
+                        >
+                          X <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                      {spot.insta && (
+                        <a
+                          href={spot.insta}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link insta"
+                        >
+                          Instagram <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <strong className="map-popup-title large primary">
                     {isSelected ? `🚩 ${spot.name}（選択中）` : spot.name}
                   </strong>
