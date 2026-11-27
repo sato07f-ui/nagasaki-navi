@@ -32,7 +32,7 @@ async function fetchRouteWithProfile(
   try {
     const startParam = `${start[1]},${start[0]}`;
     const endParam = `${end[1]},${end[0]}`;
-    const url = `https://api.openrouteservice.org/v2/directions/${profile}?api_key=${apiKey}&start=${startParam}&end=${endParam}`;
+    const url = `https://api.heigit.org/openrouteservice/v2/directions/${profile}?api_key=${apiKey}&start=${startParam}&end=${endParam}`;
 
     const res = await fetchWithTimeout(url, {}, 3000);
     if (!res.ok) {
