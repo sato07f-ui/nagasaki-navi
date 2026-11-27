@@ -305,6 +305,34 @@
   color: #1e293b;
 }
 
+/* ボトムシートの持ち手（タップ・上下スワイプで開閉） */
+.map-sheet-handle {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  /* カード上部の余白に重ねて、押せる範囲を広げる */
+  margin: -0.75rem 0 0.25rem;
+  padding: 0.625rem 0 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* スワイプ中にページがスクロールしないようにする */
+  touch-action: none;
+}
+
+.map-sheet-handle-bar {
+  display: block;
+  width: 2.5rem;
+  height: 0.3125rem;
+  border-radius: 9999px;
+  background-color: #cbd5e1;
+  transition: background-color 0.2s;
+}
+
+.map-sheet-handle:hover .map-sheet-handle-bar {
+  background-color: #94a3b8;
+}
+
 .map-card-header {
   display: flex;
   align-items: flex-start;
