@@ -1,5 +1,4 @@
-import parkingData from "../data/parking.json";
-import spotsData from "../data/spot.json";
+import { getAllParkings, getAllSpots, ParkingItem } from "../utils/parkingService";
 
 interface ParkInfoProps {
   isOpen: boolean;
@@ -8,6 +7,8 @@ interface ParkInfoProps {
 
 export function ParkInfo({ isOpen, onClose }: ParkInfoProps) {
   if (!isOpen) return null;
+
+  const parkings = getAllParkings();
 
   return (
     <div
@@ -21,7 +22,7 @@ export function ParkInfo({ isOpen, onClose }: ParkInfoProps) {
         <div className="mb-3 flex items-center justify-between border-b pb-2">
           <div className="text-xs text-slate-500">
             <h3 className="flex items-center gap-1 text-base font-bold text-slate-800">
-              市内駐車場一覧（{parkingData.length}箇所）
+              市内駐車場一覧（{parkings.length}箇所）
             </h3>
             <p className="mt-0.5">長崎市内の駐車場情報</p>
             <p>※料金は3時間利用時のものです。詳細はリンク先からご確認ください。</p>
@@ -36,7 +37,7 @@ export function ParkInfo({ isOpen, onClose }: ParkInfoProps) {
         </div>
 
         <div className="flex flex-col gap-2 overflow-y-auto pr-1">
-          {parkingData.map((parking: any) => (
+          {parkings.map((parking) => (
             <ParkingCard key={parking.id} parking={parking} />
           ))}
         </div>
@@ -45,9 +46,15 @@ export function ParkInfo({ isOpen, onClose }: ParkInfoProps) {
   );
 }
 
-function ParkingCard({ parking }: { parking: any }) {
-  const nearbySpots = parking.spot_key
-    ?.map((key: string) => spotsData.find((spot) => spot.id === key)?.name)
+function ParkingCard({ parking }: { parking: ParkingItem }) {
+  const spots = getAllSpots();
+  const spotKeys = Array.isArray(parking.spot_key)
+    ? parking.spot_key
+    : parking.spot_key
+      ? [parking.spot_key]
+      : [];
+  const nearbySpots = spotKeys
+    .map((key) => spots.find((spot) => spot.id === key)?.name)
     .filter(Boolean)
     .join("、");
 

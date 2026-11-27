@@ -154,6 +154,63 @@
   color: #1d4ed8;
 }
 
+.map-popup-top-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 6px;
+  padding-right: 18px;
+}
+
+.map-popup-card .map-popup-top-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.map-popup-card .map-popup-top-link:active {
+  transform: scale(0.96);
+}
+
+.map-popup-card .map-popup-top-link.detail {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.map-popup-card .map-popup-top-link.detail:hover {
+  background-color: #dbeafe;
+}
+
+.map-popup-card .map-popup-top-link.x {
+  background-color: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.map-popup-card .map-popup-top-link.x:hover {
+  background-color: #334155;
+}
+
+.map-popup-card .map-popup-top-link.insta {
+  background-color: #fdf2f8;
+  color: #db2777;
+  border-color: #fbcfe8;
+}
+
+.map-popup-card .map-popup-top-link.insta:hover {
+  background-color: #fce7f3;
+}
+
 .map-popup-action-btn {
   margin-top: 8px;
   width: 100%;

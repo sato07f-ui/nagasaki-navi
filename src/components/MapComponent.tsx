@@ -14,10 +14,13 @@ import "leaflet/dist/leaflet.css";
 import "./MapComponent.css";
 
 import intersections from "../data/intersection.json";
-import parkingData from "../data/parking.json";
-import spotsData from "../data/spot.json";
 import { fetchRoute, LatLngTuple } from "../utils/RouteService";
-import { getSpotById, getParkingForSpot } from "../utils/parkingService";
+import {
+  getAllParkings,
+  getAllSpots,
+  getSpotById,
+  getParkingForSpot,
+} from "../utils/parkingService";
 
 // Next.jsでLeafletのデフォルトマーカー画像が表示されない問題を解決
 delete (L.Icon.Default.prototype as { _getIconUrl?: unknown })._getIconUrl;
@@ -212,6 +215,20 @@ export default function MapComponent({
     setIsSheetOpen(true);
   }
 
+  // 出発地またはゴールが変わったとき（解除時を含む）にルート表示状態をリセット
+  const currentGoalKey = goalPosition
+    ? `${startPosition[0]},${startPosition[1]}->${goalPosition[0]},${goalPosition[1]}`
+    : null;
+  const [prevGoalKey, setPrevGoalKey] = useState<string | null>(currentGoalKey);
+  if (currentGoalKey !== prevGoalKey) {
+    setPrevGoalKey(currentGoalKey);
+    setRoutePositions([]);
+    setWalkingPositions([]);
+    setErrorMessage(null);
+    setRouteMessage(null);
+    setIsLoading(Boolean(currentGoalKey));
+  }
+
   // 持ち手のスワイプ判定（指を離したときの上下の移動量だけを見る）
   const SWIPE_THRESHOLD = 30; // これ以上動いたらスワイプとみなす（px）
   const dragStartY = useRef<number | null>(null);
@@ -269,13 +286,8 @@ export default function MapComponent({
   };
 
   useEffect(() => {
-    // 目的地が選択されていない場合はルートをクリアして探索しない
+    // 目的地が選択されていない場合は探索しない
     if (!goalPosition) {
-      setRoutePositions([]);
-      setWalkingPositions([]);
-      setIsLoading(false);
-      setErrorMessage(null);
-      setRouteMessage(null);
       return;
     }
 
@@ -283,8 +295,6 @@ export default function MapComponent({
 
     async function execute() {
       if (!goalPosition) return;
-      setIsLoading(true);
-      setErrorMessage(null);
 
       const result = await fetchRoutes(startPosition, goalPosition, walkFrom, walkTo);
       if (ignore) return;
@@ -619,7 +629,7 @@ export default function MapComponent({
         ))}
 
         {/* parking.json からその他の駐車場マーカーを描画（目的地選択時に周辺駐車場として表示） */}
-        {parkingData.map((p: any) => {
+        {getAllParkings().map((p) => {
           if (targetParking && p.id === targetParking.id) {
             return null;
           }
@@ -695,7 +705,7 @@ export default function MapComponent({
         })}
 
         {/* 観光地（spot.json）のピンを描画 */}
-        {spotsData.map((spot) => {
+        {getAllSpots().map((spot) => {
           const isSelected = selectedSpot?.id === spot.id;
           const associatedParking = getParkingForSpot(spot.id);
 
@@ -707,6 +717,41 @@ export default function MapComponent({
             >
               <Popup>
                 <div className="map-popup-card wide">
+                  {(spot.url || spot.x || spot.insta) && (
+                    <div className="map-popup-top-links">
+                      {spot.url && (
+                        <a
+                          href={spot.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link detail"
+                        >
+                          詳細 <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                      {spot.x && (
+                        <a
+                          href={spot.x}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link x"
+                        >
+                          X <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                      {spot.insta && (
+                        <a
+                          href={spot.insta}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="map-popup-top-link insta"
+                        >
+                          Instagram <span aria-hidden="true">↗</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <strong className="map-popup-title large primary">
                     {isSelected ? `🚩 ${spot.name}（選択中）` : spot.name}
                   </strong>
