@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -203,6 +203,47 @@ export default function MapComponent({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
 
+  // 案内カード（ボトムシート）の開閉。ルート表示直後は開いた状態
+  const [isSheetOpen, setIsSheetOpen] = useState<boolean>(true);
+  // 別の観光地を選んだら、案内を見逃さないよう開いた状態に戻す
+  const [prevSpotId, setPrevSpotId] = useState(spotId);
+  if (spotId !== prevSpotId) {
+    setPrevSpotId(spotId);
+    setIsSheetOpen(true);
+  }
+
+  // 持ち手のスワイプ判定（指を離したときの上下の移動量だけを見る）
+  const SWIPE_THRESHOLD = 30; // これ以上動いたらスワイプとみなす（px）
+  const dragStartY = useRef<number | null>(null);
+  const isSwiped = useRef<boolean>(false);
+
+  const handleSheetPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    dragStartY.current = e.clientY;
+    isSwiped.current = false;
+  };
+
+  const handleSheetPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragStartY.current === null) return;
+    const deltaY = e.clientY - dragStartY.current;
+    dragStartY.current = null;
+    if (deltaY > SWIPE_THRESHOLD) {
+      setIsSheetOpen(false); // 下にスワイプ → たたむ
+      isSwiped.current = true;
+    } else if (deltaY < -SWIPE_THRESHOLD) {
+      setIsSheetOpen(true); // 上にスワイプ → 開く
+      isSwiped.current = true;
+    }
+  };
+
+  // タップ（またはキーボード操作）で開閉を切り替える。スワイプ直後のクリックは無視する
+  const handleSheetClick = () => {
+    if (isSwiped.current) {
+      isSwiped.current = false;
+      return;
+    }
+    setIsSheetOpen((prev) => !prev);
+  };
+
   // 取得結果を state に反映
   const applyRoutes = ({ driving, walkingCoordinates }: Awaited<ReturnType<typeof fetchRoutes>>) => {
     if (driving.error) {
@@ -317,6 +358,21 @@ export default function MapComponent({
           {/* ③ ルート取得完了時の案内カード */}
           {!isLoading && !errorMessage && selectedSpot && (
             <div className="map-glass-card map-info-card">
+              {/* ボトムシートの持ち手（タップ・上下スワイプで開閉） */}
+              <button
+                type="button"
+                className="map-sheet-handle"
+                onPointerDown={handleSheetPointerDown}
+                onPointerUp={handleSheetPointerUp}
+                onPointerCancel={() => (dragStartY.current = null)}
+                onClick={handleSheetClick}
+                aria-expanded={isSheetOpen}
+                aria-label={isSheetOpen ? "案内カードをたたむ" : "案内カードを開く"}
+                title={isSheetOpen ? "たたむ" : "開く"}
+              >
+                <span className="map-sheet-handle-bar" />
+              </button>
+
               {/* カードヘッダー */}
               <div className="map-card-header">
                 <div className="map-card-header-left">
@@ -348,6 +404,9 @@ export default function MapComponent({
                 )}
               </div>
 
+              {/* ここから下は開いた状態のときだけ表示 */}
+              {isSheetOpen && (
+              <>
               {/* 駐車場メタ情報バッジ */}
               {targetParking && (
                 <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px] text-slate-600">
@@ -401,6 +460,8 @@ export default function MapComponent({
                 </span>
                 <span className="map-footer-note">初心者安心</span>
               </div>
+              </>
+              )}
             </div>
           )}
         </div>
